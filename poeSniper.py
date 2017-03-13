@@ -3,10 +3,13 @@ import json
 import gzip
 import io
 
+class FRAME_TYPES:
+    Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
+
 BASE_SITE = "http://api.pathofexile.com/public-stash-tabs"
-FIRST_PAGE = ""
-#FIRST_PAGE = "49843657-52888415-49427506-57511230-53495186"
-TOTAL_PAGES = 20
+#FIRST_PAGE = ""
+FIRST_PAGE = "49919976-52967025-49502222-57596848-53578103"
+TOTAL_PAGES = 1
 
 def decodeGzip(data): # FIXME
     buf = io.StringIO(data)
@@ -55,8 +58,11 @@ for x in range(TOTAL_PAGES):
         else:
             total_items_number += len(items)
             for t in range(len(items)):
-                if (items[t]["frameType"] == 6 and items[t]["league"] == "Legacy"):
+                if (items[t]["frameType"] == FRAME_TYPES.Card and items[t]["league"] == "Legacy"):
                     cards += 1
+                    player_info = stashes[i]
+                    player_info["items"] = []
+                    dump_file.write(str(player_info))
                     dump_file.write(str(items[t]))
                     dump_file.write("\n")
     
