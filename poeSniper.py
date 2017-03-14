@@ -1,7 +1,5 @@
 import requests
 import json
-import gzip
-import io
 import time
 
 CURRENT_LEAGUE = "Legacy"
