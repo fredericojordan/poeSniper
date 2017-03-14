@@ -17,17 +17,17 @@ TOTAL_PAGES = 1
     
     
 def getPrices():
-	global league
-	global div_prices
-	
-	params = {'league': league, 'time': time.strftime("%Y-%m-%d")}
-	
-	url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
-	r = requests.get(url_div, params = params)
-	div_prices = r.json().get('lines')
-	
-	
-	
+    global league
+    global div_prices
+    
+    params = {'league': league, 'time': time.strftime("%Y-%m-%d")}
+    
+    url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
+    r = requests.get(url_div, params = params)
+    div_prices = r.json().get('lines')
+    
+    
+    
 def getStashes(id=""):
     target = BASE_SITE
     if (id != ""):
@@ -44,7 +44,7 @@ def getStashes(id=""):
 getPrices()
 
 for div in div_prices:
-	print(div.get('name') + " " + str(div.get('chaosValue')))
+    print(div.get('name') + " " + str(div.get('chaosValue')))
 
 dump_file = open('dump.txt', 'w')
 next_page = FIRST_PAGE
