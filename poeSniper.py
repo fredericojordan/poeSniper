@@ -4,29 +4,21 @@ import gzip
 import io
 import time
 
-league = "Legacy"
-div_prices = []
-
-class FRAME_TYPES:
-    Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
-
+CURRENT_LEAGUE = "Legacy"
 BASE_SITE = "http://api.pathofexile.com/public-stash-tabs"
 #FIRST_PAGE = ""
 FIRST_PAGE = "49919976-52967025-49502222-57596848-53578103"
-TOTAL_PAGES = 1
+TOTAL_PAGES = 0
     
+class FRAME_TYPES:
+    Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
     
 def getPrices():
-    global league
-    global div_prices
-    
-    params = {'league': league, 'time': time.strftime("%Y-%m-%d")}
-    
+    params = {'league': CURRENT_LEAGUE, 'time': time.strftime("%Y-%m-%d")}
     url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
     r = requests.get(url_div, params = params)
     div_prices = r.json().get('lines')
-    
-    
+    return dict( [div.get('name'), div.get('chaosValue')] for div in div_prices )
     
 def getStashes(id=""):
     target = BASE_SITE
@@ -41,10 +33,10 @@ def getStashes(id=""):
     page = page.replace("\\\\", "\\")
     return page
     
-getPrices()
 
-for div in div_prices:
-    print(div.get('name') + " " + str(div.get('chaosValue')))
+div_prices = getPrices()
+for k,v in div_prices.items():
+    print(str(k) + ": " + str(v))
 
 dump_file = open('dump.txt', 'w')
 next_page = FIRST_PAGE
@@ -68,7 +60,7 @@ for x in range(TOTAL_PAGES):
         else:
             total_items_number += len(items)
             for t in range(len(items)):
-                if (items[t]["frameType"] == FRAME_TYPES.Card and items[t]["league"] == "Legacy"):
+                if (items[t]["frameType"] == FRAME_TYPES.Card and items[t]["league"] == CURRENT_LEAGUE):
                     cards += 1
                     player_info = stashes[i]
                     player_info["items"] = []
