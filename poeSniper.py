@@ -1,4 +1,4 @@
-import urllib.request
+import requests
 import json
 import gzip
 import io
@@ -10,25 +10,14 @@ BASE_SITE = "http://api.pathofexile.com/public-stash-tabs"
 #FIRST_PAGE = ""
 FIRST_PAGE = "49919976-52967025-49502222-57596848-53578103"
 TOTAL_PAGES = 1
-
-def decodeGzip(data): # FIXME
-    buf = io.StringIO(data)
-    f = gzip.GzipFile(fileobj=buf)
-    return f.read()
     
-def getStashes(id="", encodeGzip=False):
+def getStashes(id=""):
     target = BASE_SITE
     if (id != ""):
         target = target + "?id=" + str(id)
-        
-    request = urllib.request.Request(target)
-    if (encodeGzip):
-        request.add_header('Accept-encoding', 'gzip')
-    response = urllib.request.urlopen(request)
-    page = str(response.read())
-    
-    if response.info().get('Content-Encoding') == 'gzip':
-        page = decodeGzip(page)
+       
+    request = requests.get(target)
+    page = str(request._content)
     
     page = page[2:-1]
     page = page.replace("\\'", "'")
@@ -42,7 +31,6 @@ for x in range(TOTAL_PAGES):
     print("---- Page " +  str(x+1) + " ----")
     
     data = getStashes(next_page)
-    #data = getStashes(next_page, True) # GZIP
     
     jPage = json.loads(data)
     stashes = jPage["stashes"]
