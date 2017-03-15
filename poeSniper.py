@@ -67,7 +67,7 @@ def offer2chaos(offer):
         #return float(offer[1])
     
     if "fus" in offer[2]:
-        return eval(offer[1])*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
+        return  float(eval(offer[1]))*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
     
     for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
         if offer[2].lower() in k.lower():
@@ -113,9 +113,9 @@ def getTradeInGameMessage(stash, item):
     return '@{} Hi, I would like to buy your {} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, price, currency, league, stashName, w, h)
 
 def getTradeInfoMessage(profit, item):
-	investment = getItemSellingOffer(item)[1]
+	investment = getItemSellingPrice(item)
 	roi = profit/float(investment)
-	return '[Item Found! Investment: {} / Profit: {} / ROI: {}]'.format(investment, profit, str(roi))
+	return '[Item Found! Investment: {} / Profit: {} / ROI: {}] '.format(investment, profit, str(roi))
 
 def findDivDeals(stashes):
     for s in stashes:
@@ -124,9 +124,10 @@ def findDivDeals(stashes):
             if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i):
                 #print(getItemName(i))
                 profit =  getProfitMargin(i)
-                if profit > 5.0:
-                    print(getTradeInfoMessage(profit, i))
-                    print(getTradeInGameMessage(s, i))
+                if profit > -15.0:
+                    str = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
+                    print(str)
+                
 
 
 def createStashDumpFile(npages, starting_page=STARTING_PAGE):
