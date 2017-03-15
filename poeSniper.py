@@ -9,14 +9,14 @@ TOTAL_PAGES = 1
     
 class FRAME_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
-    
-def getDivinationPrices():
+
+def getPricesFromNinja(url):
     params = {'league': CURRENT_LEAGUE, 'time': time.strftime("%Y-%m-%d")}
-    url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
-    response = requests.get(url_div, params = params)
-    div_prices = response.json().get('lines')
-    return dict( [div.get('name'), div.get('chaosValue')] for div in div_prices )
+    response = requests.get(url, params = params)
+    prices = response.json().get('lines')
+    return dict( [i.get('name'), i.get('chaosValue')] for i in prices )	
     
+
 def getApiPage(page_id=""):
     target = API_BASE_URL
     if (page_id != ""):
@@ -61,11 +61,12 @@ def isEmpty(stash):
 
 def getItemPrice(name, frameType):
 	# Other items can be added here...
-	# Divination
+	# Divination Cards
 	if frameType == FRAME_TYPES.Card:
 		for k,v in div_prices.items():
 			if k == name:
 				return float(v)
+	# Prophecies
 
 def findDivDeals(stashes):
 	for s in stashes:
@@ -94,10 +95,22 @@ def findDivDeals(stashes):
 					
 					if (getItemPrice(name, FRAME_TYPES.Card) - price) > -5.0:
 						print('@' + lastCharacterName + ' Hi, I would like to buy your ' + str(name) + ' listed for ' + str(price) + ' chaos in ' + str(league) + ' (stash tab "' + str(stashName) + '"; position: left ' + str(w) + ', top ' + str(h) + ')')
-						# @LegacyStuff Hi, I would like to buy your Jack in the Box listed for 1 chaos in Legacy (stash tab "CARDS"; position: left 49, top 1)
+
+# Divination Cards						
+url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
+div_prices = getPricesFromNinja(url_div)
+
+# Prophecies
+url_prophecy = "http://api.poe.ninja/api/Data/GetProphecyOverview"
+prophecy_prices = getPricesFromNinja(url_prophecy)
+
+# Flasks
+url_flasks = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
+flask_prices = getPricesFromNinja(url_flasks)
 
 
-div_prices = getDivinationPrices()
+#for k,v in flask_prices.items():
+#	print(str(k) + ': ' + str(v))
 
 # VSZ
 data = loadApiPageFromFile('response.txt')
