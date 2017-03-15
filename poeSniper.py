@@ -41,16 +41,35 @@ def getItemCount(stashes):
     for i in range(len(stashes)):
         len(stashes[i]["items"])
     return count
+    
+def hasPrice(item):
+    return "note" in item.keys()
+    
+def hasBoPrice(item):
+    return "note" in item.keys() and item["note"].startswith("~b/o")
 
+def getItemBoPrice(item):
+    return item["note"][5:] # if not B/O, will fuck up everything
+ 
+def getItemName(item):
+    return item["typeLine"]
+
+def getItemType(item):
+    return item["frameType"]
+    
+def getItemLeague(item):
+    return item["league"]
+
+def isEmpty(stash):
+    return stash["items"] == []
+    
 div_prices = getDivinationPrices()
-for k,v in div_prices.items():
-    print(str(k) + ": " + str(v))
 
 dump_file = open('dump.txt', 'w')
 next_page = STARTING_PAGE
 
-for x in range(TOTAL_PAGES):
-    print("---- Page " +  str(x+1) + " ----")
+for p in range(TOTAL_PAGES):
+    print("---- Page " +  str(p+1) + " ----")
 
     #jPage = getApiPage(next_page)
     jPage = loadApiPageFromFile('response.txt')
@@ -58,32 +77,34 @@ for x in range(TOTAL_PAGES):
     stashes = jPage["stashes"]
     stashes_count = len(stashes)
     
-    empty_stashes = 0
-    total_items_number = 0
-    cards = 0
-    for i in range(stashes_count):
-        items = stashes[i]["items"]
-        if (items == []):
-            empty_stashes += 1
-        else:
-            total_items_number += len(items)
-            for t in range(len(items)):
-                if (items[t]["frameType"] == FRAME_TYPES.Card and items[t]["league"] == CURRENT_LEAGUE):
-                    item_name = items[t]["typeLine"]
-                    if "note" in items[t].keys() and items[t]["note"].startswith("~b/o"):
-                        print("{}: {} ({} chaos)".format(item_name, items[t]["note"][5:], div_prices[item_name]))
-                    cards += 1
-                    player_info = stashes[i]
-                    player_info["items"] = []
-                    dump_file.write(str(player_info))
-                    dump_file.write(str(items[t]))
-                    dump_file.write("\n")
+    empty_stashes_count = 0
+    total_items_count = 0
+    card_count = 0
     
-    print(str(total_items_number) + " items on " + str(stashes_count-empty_stashes) + " stashes")
-    print(str(cards) + " divination cards on legacy league")
+    for s in range(stashes_count):
+        items = stashes[s]["items"]
+        if ( isEmpty(stashes[s]) ):
+            empty_stashes_count += 1
+        else:
+            items = stashes[s]["items"]
+            total_items_count += len(items)
+            for i in range(len(items)):
+                if (getItemType(items[i]) == FRAME_TYPES.Card and getItemLeague(items[i]) == CURRENT_LEAGUE):
+                    card_count += 1
+                    item_name = getItemName(items[i])
+                    
+                    if hasBoPrice(items[i]):
+                        print("{}: {} ({} chaos)".format(item_name, getItemBoPrice(items[i]), div_prices[item_name]))                    
+                        player_info = stashes[s]
+                        player_info["items"] = []
+                        dump_file.write("{} {}\n".format(player_info, items[i]))
+    
+    print("----")
+    print("This page has {} items on {} stashes and {} empty stashes".format(total_items_count, stashes_count-empty_stashes_count, empty_stashes_count))
+    print("{} divination cards on legacy league".format(card_count))
     
     next_page = jPage["next_change_id"]
-    print("Next page: " + next_page)   
+    print("Next page: {}".format(next_page))
 
 dump_file.close()
 
