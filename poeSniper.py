@@ -30,8 +30,8 @@ def getApiPage(page_id=""):
     page = page.replace("\\\\", "\\")
     return json.loads(page)
 
-def loadApiPageFromFile(file):
-    file = open(file, 'r', encoding='utf-8')
+def loadApiPageFromFile(file_name):
+    file = open(file_name, 'r', encoding='utf-8')
     text = file.read()
     file.close()
     return json.loads(text)
