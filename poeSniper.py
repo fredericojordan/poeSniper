@@ -24,10 +24,6 @@ def getApiPage(page_id=""):
        
     request = requests.get(target)
     page = str(request._content)
-    
-    page = page[2:-1]
-    page = page.replace("\\'", "'")
-    page = page.replace("\\\\", "\\")
     return json.loads(page)
 
 def loadApiPageFromFile(file_name):
