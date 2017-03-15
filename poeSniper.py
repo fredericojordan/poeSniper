@@ -34,8 +34,7 @@ def getApiPage(page_id=""):
         target = target + "?id=" + str(page_id)
        
     request = requests.get(target)
-    page = str(request._content)
-    return json.loads(page)
+    return request.json()
 
 def loadApiPageFromFile(file_name):
     file = open(file_name, 'r', encoding='utf-8')
@@ -119,6 +118,18 @@ def findDivDeals(stashes):
                     print(getTradeMessage(s, i))
 
 
+def createStashDumpFile(npages):
+	nextPageID = STARTING_PAGE
+	StashDump = open('StashDump.txt', 'w')
+	for k in range(npages):
+		data = getApiPage(nextPageID)
+		StashDump.write(data)
+		nextPageID = data['next_change_id']
+	StashDump.close()
+			
+			
+
+
 MARKET_PRICES[ITEM_TYPES.Card].update(getNinjaPrices(CARD_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
@@ -128,6 +139,12 @@ MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 data = loadApiPageFromFile('response.txt')
 stashes = data['stashes']
 findDivDeals(stashes)
+
+# Gets next_page_id from poe.ninja
+r = requests.get("http://api.poe.ninja/api/Data/GetStats")
+STARTING_PAGE = r.json().get('nextChangeId')
+
+createStashDumpFile(50)
 
 # # FVJ
 # dump_file = open('dump.txt', 'w')
