@@ -6,15 +6,20 @@ CURRENT_LEAGUE = "Legacy"
 API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
 STARTING_PAGE = "49919976-52967025-49502222-57596848-53578103" # empty string for first page
 TOTAL_PAGES = 1
-    
+MARKET_PRICES = {}
+
+UNIQUE_FLASK_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
+CARD_PRICES_URL = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
+PROPHECY_PRICES_URL = "http://api.poe.ninja/api/Data/GetProphecyOverview"
+
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
 
-def getPricesFromNinja(url):
+def getNinjaPrices(url):
     params = {'league': CURRENT_LEAGUE, 'time': time.strftime("%Y-%m-%d")}
     response = requests.get(url, params = params)
     prices = response.json().get('lines')
-    return dict( [i.get('name'), i.get('chaosValue')] for i in prices )	
+    return dict( [i.get('name'), float(i.get('chaosValue')) ] for i in prices )	
     
 
 def getApiPage(page_id=""):
@@ -38,14 +43,14 @@ def getItemCount(stashes):
         len(stashes[i]["items"])
     return count
     
-def hasPrice(item):
+def isSelling(item):
     return "note" in item.keys()
     
-def hasBoPrice(item):
+def isSellingBuyout(item):
     return "note" in item.keys() and item["note"].startswith("~b/o")
 
-def getItemBoPrice(item):
-    return item["note"][5:] # if not B/O, will fuck up everything
+def getItemSellingPrice(item):
+    return item["note"].split()
  
 def getItemName(item):
     return item["typeLine"]
@@ -68,11 +73,8 @@ def getAccountName(stash):
 def isEmpty(stash):
     return stash["items"] == []
 
-def getItemPrice(item):
-    # Other items can be added here...
-    # Divination Cards
-    if getItemType(item) == ITEM_TYPES.Card:
-        return div_prices[getItemName(item)]
+def getItemMarketPrice(item):
+    return MARKET_PRICES[getItemName(item)]
                 
 def getTradeMessage(stash, item):
     characterName = getCharacterName(stash)
@@ -98,20 +100,16 @@ def findDivDeals(stashes):
                     
                     price = float(price.split()[1])
                     
-                    if (getItemPrice(i) - price) > -5.0:
+                    if (getItemMarketPrice(i) - price) > -5.0:
                         print(getTradeMessage(s, i))
 
-# Divination Cards						
-url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
-div_prices = getPricesFromNinja(url_div)
 
-# Prophecies
-url_prophecy = "http://api.poe.ninja/api/Data/GetProphecyOverview"
-prophecy_prices = getPricesFromNinja(url_prophecy)
 
-# Flasks
-url_flasks = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
-flask_prices = getPricesFromNinja(url_flasks)
+
+MARKET_PRICES.update(getNinjaPrices(CARD_PRICES_URL))
+MARKET_PRICES.update(getNinjaPrices(PROPHECY_PRICES_URL))
+MARKET_PRICES.update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
+
 
 # VSZ
 data = loadApiPageFromFile('response.txt')
@@ -124,7 +122,7 @@ dump_file = open('dump.txt', 'w')
 next_page = STARTING_PAGE
 
 for p in range(TOTAL_PAGES):
-    print("---- Page " +  str(p+1) + " ----")
+    print("---- Page {} ----".format(p+1))
 
     #jPage = getApiPage(next_page)
     jPage = loadApiPageFromFile('response.txt')
@@ -148,8 +146,8 @@ for p in range(TOTAL_PAGES):
                     card_count += 1
                     item_name = getItemName(items[i])
                     
-                    if hasBoPrice(items[i]):
-                        print("{}: {} ({} chaos)".format(item_name, getItemBoPrice(items[i]), div_prices[item_name]))                    
+                    if isSellingBuyout(items[i]):
+                        print("{}: {} ({} chaos)".format(item_name, ' '.join(getItemSellingPrice(items[i])[1:]), MARKET_PRICES[item_name]))                    
                         player_info = stashes[s]
                         player_info["items"] = []
                         dump_file.write("{} {}\n".format(player_info, items[i]))
