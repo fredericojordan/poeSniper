@@ -58,9 +58,54 @@ def getItemLeague(item):
 
 def isEmpty(stash):
     return stash["items"] == []
-    
+
+def getItemPrice(name, frameType):
+	# Other items can be added here...
+	# Divination
+	if frameType == FRAME_TYPES.Card:
+		for k,v in div_prices.items():
+			if k == name:
+				return float(v)
+
+def findDivDeals(stashes):
+	for s in stashes:
+		accountName = s['accountName']
+		lastCharacterName = s['lastCharacterName']
+		items = s['items']
+		stashName = s.get('stash')
+		
+		for i in items:
+			league = i.get('league')
+			frameType = i.get('frameType')
+			if league == CURRENT_LEAGUE and frameType == FRAME_TYPES.Card:
+				name = i.get('typeLine')
+				price = i.get('note')
+				w = i.get('w')
+				h = i.get('h')
+				
+				# Gets items with price, in chaos, b/o only
+				if price and ('~b/o' and 'chaos' in price):
+					
+					# convert price
+					price = price.replace('~b/o ', '')
+					price = price.replace('~price ', '')
+					price = price.replace(' chaos', '')
+					price = float(price)
+					
+					if (getItemPrice(name, FRAME_TYPES.Card) - price) > -5.0:
+						print('@' + lastCharacterName + ' Hi, I would like to buy your ' + str(name) + ' listed for ' + str(price) + ' chaos in ' + str(league) + ' (stash tab "' + str(stashName) + '"; position: left ' + str(w) + ', top ' + str(h) + ')')
+						# @LegacyStuff Hi, I would like to buy your Jack in the Box listed for 1 chaos in Legacy (stash tab "CARDS"; position: left 49, top 1)
+
+
 div_prices = getDivinationPrices()
 
+# VSZ
+data = loadApiPageFromFile('response.txt')
+stashes = data['stashes']
+findDivDeals(stashes)
+
+
+# FVJ
 dump_file = open('dump.txt', 'w')
 next_page = STARTING_PAGE
 
