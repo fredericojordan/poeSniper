@@ -7,7 +7,7 @@ API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
 STARTING_PAGE = "49919976-52967025-49502222-57596848-53578103" # empty string for first page
 TOTAL_PAGES = 1
     
-class FRAME_TYPES:
+class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
 
 def getPricesFromNinja(url):
@@ -56,45 +56,50 @@ def getItemType(item):
 def getItemLeague(item):
     return item["league"]
 
+def getStashName(stash):
+    return stash["stash"]
+
+def getCharacterName(stash):
+    return stash["lastCharacterName"]
+
+def getAccountName(stash):
+    return stash["accountName"]
+
 def isEmpty(stash):
     return stash["items"] == []
 
-def getItemPrice(name, frameType):
-	# Other items can be added here...
-	# Divination Cards
-	if frameType == FRAME_TYPES.Card:
-		for k,v in div_prices.items():
-			if k == name:
-				return float(v)
-	# Prophecies
+def getItemPrice(item):
+    # Other items can be added here...
+    # Divination Cards
+    if getItemType(item) == ITEM_TYPES.Card:
+        return div_prices[getItemName(item)]
+                
+def getTradeMessage(stash, item):
+    characterName = getCharacterName(stash)
+    itemName = getItemName(item)
+    price = item["note"].split()[1]
+    currency = item["note"].split()[2]
+    league = getItemLeague(item)
+    stashName = getStashName(stash)
+    w = item.get('w')
+    h = item.get('h')
+    return '@{} Hi, I would like to buy your {} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, price, currency, league, stashName, w, h)
 
 def findDivDeals(stashes):
-	for s in stashes:
-		accountName = s['accountName']
-		lastCharacterName = s['lastCharacterName']
-		items = s['items']
-		stashName = s.get('stash')
-		
-		for i in items:
-			league = i.get('league')
-			frameType = i.get('frameType')
-			if league == CURRENT_LEAGUE and frameType == FRAME_TYPES.Card:
-				name = i.get('typeLine')
-				price = i.get('note')
-				w = i.get('w')
-				h = i.get('h')
-				
-				# Gets items with price, in chaos, b/o only
-				if price and ('~b/o' and 'chaos' in price):
-					
-					# convert price
-					price = price.replace('~b/o ', '')
-					price = price.replace('~price ', '')
-					price = price.replace(' chaos', '')
-					price = float(price)
-					
-					if (getItemPrice(name, FRAME_TYPES.Card) - price) > -5.0:
-						print('@' + lastCharacterName + ' Hi, I would like to buy your ' + str(name) + ' listed for ' + str(price) + ' chaos in ' + str(league) + ' (stash tab "' + str(stashName) + '"; position: left ' + str(w) + ', top ' + str(h) + ')')
+    for s in stashes:
+        items = s['items']
+        
+        for i in items:
+            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card:
+                price = i.get('note')
+                
+                # Gets items with price, in chaos, b/o only
+                if price and ('~b/o' and 'chaos' in price):
+                    
+                    price = float(price.split()[1])
+                    
+                    if (getItemPrice(i) - price) > -5.0:
+                        print(getTradeMessage(s, i))
 
 # Divination Cards						
 url_div = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
@@ -107,10 +112,6 @@ prophecy_prices = getPricesFromNinja(url_prophecy)
 # Flasks
 url_flasks = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
 flask_prices = getPricesFromNinja(url_flasks)
-
-
-#for k,v in flask_prices.items():
-#	print(str(k) + ': ' + str(v))
 
 # VSZ
 data = loadApiPageFromFile('response.txt')
@@ -143,7 +144,7 @@ for p in range(TOTAL_PAGES):
             items = stashes[s]["items"]
             total_items_count += len(items)
             for i in range(len(items)):
-                if (getItemType(items[i]) == FRAME_TYPES.Card and getItemLeague(items[i]) == CURRENT_LEAGUE):
+                if (getItemType(items[i]) == ITEM_TYPES.Card and getItemLeague(items[i]) == CURRENT_LEAGUE):
                     card_count += 1
                     item_name = getItemName(items[i])
                     
