@@ -56,21 +56,22 @@ def isSelling(item):
     return "note" in item.keys()
     
 def isSellingBuyout(item):
-    return "note" in item.keys() and item["note"].startswith("~b/o")
+    return "note" in item.keys() and item['note'].startswith("~b/o")
 
 def getItemSellingOffer(item):
-    return item["note"].split()
+    return item['note'].split()
 
 def offer2chaos(offer):
     if "chaos" in offer[2]:
-        return float(offer[1])
+        return eval(offer[1])
+        #return float(offer[1])
     
     if "fus" in offer[2]:
-        return float(offer[1])*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
+        return eval(offer[1])*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
     
     for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
         if offer[2].lower() in k.lower():
-            return float(float(offer[1])*v)
+            return float(eval(offer[1])*v)
 
 def getItemSellingPrice(item):
     return offer2chaos(getItemSellingOffer(item))
@@ -100,7 +101,7 @@ def getItemMarketPrice(item):
     if getItemType(item) == ITEM_TYPES.Card:
         return MARKET_PRICES[ITEM_TYPES.Card][getItemName(item)]
                 
-def getTradeMessage(stash, item):
+def getTradeInGameMessage(stash, item):
     characterName = getCharacterName(stash)
     itemName = getItemName(item)
     price = getItemSellingOffer(item)[1]
@@ -111,13 +112,21 @@ def getTradeMessage(stash, item):
     h = item.get('h')
     return '@{} Hi, I would like to buy your {} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, price, currency, league, stashName, w, h)
 
+def getTradeInfoMessage(profit, item):
+	investment = getItemSellingOffer(item)[1]
+	roi = profit/float(investment)
+	return '[Item Found! Investment: {} / Profit: {} / ROI: {}]'.format(investment, profit, str(roi))
+
 def findDivDeals(stashes):
     for s in stashes:
         items = s['items']
-        
         for i in items:
-            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i) and getProfitMargin(i) > -5.0:
-                print(getTradeMessage(s, i))
+            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i):
+                #print(getItemName(i))
+                profit =  getProfitMargin(i)
+                if profit > 5.0:
+                    print(getTradeInfoMessage(profit, i))
+                    print(getTradeInGameMessage(s, i))
 
 
 def createStashDumpFile(npages, starting_page=STARTING_PAGE):
@@ -142,10 +151,21 @@ MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 
-data = loadApiPageFromFile('response.txt')
-stashes = data['stashes']
-findDivDeals(stashes)
+#data = loadApiPageFromFile('response.txt')
 
-createStashDumpFile(TOTAL_PAGES, getNinjaNextPageId())
+for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
+	print(str(k) + ': ' + str(v))
+
+
+#createStashDumpFile(TOTAL_PAGES, getNinjaNextPageId())
+print('Starting sniper')
+next_change_id = getNinjaNextPageId()
+for _ in range(9999):
+	data = getApiPage(next_change_id)
+	stashes = data['stashes']
+	findDivDeals(stashes)
+	next_change_id = data['next_change_id']
+	time.sleep(1)
+	print('Page processed')
 
 print("Done!")
