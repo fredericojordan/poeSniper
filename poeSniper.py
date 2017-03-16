@@ -36,7 +36,11 @@ def getApiPage(page_id=""):
     response = requests.get(target)
     
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        with open('lastresponse.txt', 'w') as outfile:
+            json.dump(data, outfile)
+            outfile.close()
+        return data
     else:
         raise ConnectionError('API request returned status code {}: {}!'.format(response.status_code, response.reason))
 
@@ -99,7 +103,12 @@ def isEmpty(stash):
 
 def getItemMarketPrice(item):
     if getItemType(item) == ITEM_TYPES.Card:
-        return MARKET_PRICES[ITEM_TYPES.Card][getItemName(item)]
+        if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Card]:
+            return MARKET_PRICES[ITEM_TYPES.Card][getItemName(item)]
+        else:
+            print('Item not in price List! ' + getItemName(item))
+            return 9999.0
+
                 
 def getTradeInGameMessage(stash, item):
     characterName = getCharacterName(stash)
@@ -124,9 +133,9 @@ def findDivDeals(stashes):
             if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i):
                 #print(getItemName(i))
                 profit =  getProfitMargin(i)
-                if profit > -15.0:
-                    str = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
-                    print(str)
+                if profit > 3.0:
+                    outputText = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
+                    print(outputText)
                 
 
 
@@ -161,12 +170,12 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
 #createStashDumpFile(TOTAL_PAGES, getNinjaNextPageId())
 print('Starting sniper')
 next_change_id = getNinjaNextPageId()
-for _ in range(9999):
+for k in range(9999):
 	data = getApiPage(next_change_id)
 	stashes = data['stashes']
 	findDivDeals(stashes)
 	next_change_id = data['next_change_id']
 	time.sleep(1)
-	print('Page processed')
+	print('Page #' + str(k+1))
 
 print("Done!")
