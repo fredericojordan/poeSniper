@@ -207,7 +207,7 @@ def getItemMarketPrice(item):
         if getItemTypeLine(item) in MARKET_PRICES[ITEM_TYPES.Card]:
             return MARKET_PRICES[ITEM_TYPES.Card][getItemTypeLine(item)]
             
-    if getItemFrameType(item) == ITEM_TYPES.Unique and isFlask(item):
+    if getItemFrameType(item) == ITEM_TYPES.Unique:
         if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
             return MARKET_PRICES[ITEM_TYPES.Unique][getItemName(item)]
         else:
