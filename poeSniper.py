@@ -5,12 +5,15 @@ import re
 import winsound
 import base64
 
+# Interface Config
 PLAY_SOUNDS = True
+
+# Deal Finder Configs
 MIN_PROFIT = 3.0
 MIN_ROI = 0.05
-
 CURRENT_LEAGUE = "Legacy"
 
+# Prices URL
 API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
 UNIQUE_FLASK_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
 CARD_PRICES_URL = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
@@ -22,19 +25,20 @@ CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
 
 MARKET_PRICES = [{} for _ in range(10)]
 
+# Weapon Lists
 AXE1H_LIST = ['Rusted Hatchet','Jade Hatchet','Boarding Axe','Cleaver','Broad Axe','Arming Axe','Decorative Axe','Spectral Axe','Etched Hatchet','Jasper Axe','Tomahawk','Wrist Chopper','War Axe','Chest Splitter','Ceremonial Axe','Wraith Axe','Engraved Hatchet','Karui Axe','Siege Axe','Reaver Axe','Butcher Axe','Vaal Hatchet','Royal Axe','Infernal Axe','Runic Hatchet']
 AXE2H_LIST = ['Stone Axe','Jade Chopper','Woodsplitter','Poleaxe','Double Axe','Gilded Axe','Shadow Axe','Dagger Axe','Jasper Chopper','Timber Axe','Headsman Axe','Labrys','Noble Axe','Abyssal Axe','Karui Chopper','Talon Axe','Sundering Axe','Ezomyte Axe','Vaal Axe','Despot Axe','Void Axe','Fleshripper']
 BOW_LIST = ['Crude Bow','Short Bow','Long Bow','Composite Bow','Recurve Bow','Bone Bow','Royal Bow','Death Bow','Grove Bow','Reflex Bow','Decurve Bow','Compound Bow','Sniper Bow','Ivory Bow','Highborn Bow','Decimation Bow','Thicket Bow','Steelwood Bow','Citadel Bow','Ranger Bow','Assassin Bow','Spine Bow','Imperial Bow','Harbinger Bow','Maraketh Bow']
-CLAW_LIST = []
-DAGGER_LIST = []
-MACE1H_LIST = []
-MACE2H_LIST = []
-SCEPTRE_LIST = []
-STAFF_LIST = []
-SWORD1H_LIST = []
-SWORD2H_LIST = []
-SWORDTHRUST_LIST = []
-WAND_LIST = []
+CLAW_LIST = ['Nailed Fist','Sharktooth Claw','Awl','Cat\'s Paw','Blinder','Timeworn Claw','Sparkling Claw','Fright Claw','Double Claw','Thresher Claw','Gouger','Tiger\'s Paw','Gut Ripper','Prehistoric Claw','Noble Claw','Eagle Claw','Twin Claw','Great White Claw','Throat Stabber','Hellion\'s Paw','Eye Gouger','Vaal Claw','Imperial Claw','Terror Claw','Gemini Claw']
+DAGGER_LIST = ['Glass Shank','Skinning Knife','Carving Knife','Stiletto','Boot Knife','Copper Kris','Skean','Imp Dagger','Flaying Knife','Prong Dagger','Butcher Knife','Poignard','Boot Blade','Golden Kris','Royal Skean','Fiend Dagger','Trisula','Gutting Knife','Slaughter Knife','Ambusher','Ezomyte Dagger','Platinum Kris','Imperial Skean','Demon Dagger','Sai']
+MACE1H_LIST = ['Driftwood Club','Tribal Club','Spiked Club','Stone Hammer','War Hammer','Bladed Mace','Ceremonial Mace','Dream Mace','Wyrm Mace','Petrified Club','Barbed Club','Rock Breaker','Battle Hammer','Flanged Mace','Ornate Mace','Phantom Mace','Dragon Mace','Ancestral Club','Tenderizer','Gavel','Legion Hammer','Pernarch','Auric Mace','Nightmare Mace','Behemoth Mace']
+MACE2H_LIST = ['Driftwood Maul','Tribal Maul','Mallet','Sledgehammer','Jagged Maul','Brass Maul','Fright Maul','Morning Star','Totemic Maul','Great Mallet','Steelhead','Spiny Maul','Plated Maul','Dread Maul','Solar Maul','Karui Maul','Colossus Mallet','Piledriver','Meatgrinder','Imperial Maul','Terror Maul','Coronal Maul']
+SCEPTRE_LIST = ['Driftwood Sceptre','Darkwood Sceptre','Bronze Sceptre','Quartz Sceptre','Iron Sceptre','Ochre Sceptre','Ritual Sceptre','Shadow Sceptre','Grinning Fetish','Horned Sceptre','Sekhem','Crystal Sceptre','Lead Sceptre','Blood Sceptre','Royal Sceptre','Abyssal Sceptre','Stag Sceptre','Karui Sceptre','Tyrant\'s Sekhem','Opal Sceptre','Platinum Sceptre','Vaal Sceptre','Carnal Sceptre','Void Sceptre','Sambar Sceptre']
+STAFF_LIST = ['Gnarled Branch','Primitive Staff','Long Staff','Iron Staff','Coiled Staff','Royal Staff','Vile Staff','Crescent Staff','Woodful Staff','Quarterstaff','Military Staff','Serpentine Staff','Highborn Staff','Foul Staff','Moon Staff','Primordial Staff','Lathi','Ezomyte Staff','Maelström Staff','Imperial Staff','Judgement Staff','Eclipse Staff']
+SWORD1H_LIST = ['Rusted Sword','Copper Sword','Sabre','Broad Sword','War Sword','Ancient Sword','Elegant Sword','Dusk Blade','Hook Sword','Variscite Blade','Cutlass','Baselard','Battle Sword','Elder Sword','Twilight Blade','Grappler','Gemstone Sword','Corsair Sword','Gladius','Legion Sword','Vaal Blade','Eternal Sword','Midnight Blade','Tiger Hook']
+SWORD2H_LIST = ['Corroded Blade','Longsword','Bastard Sword','Two-Handed Sword','Etched Greatsword','Ornate Sword','Spectral Sword','Curved Blade','Butcher Sword','Footman Sword','Highland Blade','Engraved Greatsword','Tiger Sword','Wraith Sword','Lithe Blade','Headman\'s Sword','Reaver Sword','Ezomyte Blade','Vaal Greatsword','Lion Sword','Infernal Sword','Exquisite Blade']
+SWORDTHRUST_LIST = ['Rusted Spike','Whalebone Rapier','Battered Foil','Basket Rapier','Jagged Foil','Antique Rapier','Elegant Foil','Thorn Rapier','Smallsword','Wyrmbone Rapier','Burnished Foil','Estoc','Serrated Foil','Primeval Rapier','Fancy Foil','Apex Rapier','Courtesan Sword','Dragonbone Rapier','Tempered Foil','Pecoraro','Spiraled Foil','Vaal Rapier','Jewelled Foil','Harpy Rapier','Dragoon Sword']
+WAND_LIST = ['Driftwood Wand','Goat\'s Horn','Carved Wand','Quartz Wand','Spiraled Wand','Sage Wand','Pagan Wand','Faun\'s Horn','Engraved Wand','Crystal Wand','Serpent Wand','Omen Wand','Heathen Wand','Demon\'s Horn Wand','Opal Wand','Tornado Wand','Prophecy Wand','Profane Wand']
 
 
 class ITEM_TYPES:
@@ -310,7 +314,7 @@ MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
     print(str(k) + ': ' + str(v))
 
-for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
+for k,v in MARKET_PRICES[ITEM_TYPES.Unique].items():
     print(str(k) + ': ' + str(v))
 '''
 
