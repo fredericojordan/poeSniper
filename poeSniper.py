@@ -73,6 +73,9 @@ def offer2chaos(offer):
     if "fus" in offer[2]:
         return  float(eval(offer[1]))*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
     
+    if "gcp" in offer[2]:
+        return  float(eval(offer[1]))*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
+    
     for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
         if offer[2].lower() in k.lower():
             return float(eval(offer[1])*v)
@@ -105,9 +108,6 @@ def getItemMarketPrice(item):
     if getItemType(item) == ITEM_TYPES.Card:
         if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Card]:
             return MARKET_PRICES[ITEM_TYPES.Card][getItemName(item)]
-        else:
-            print('Item not in price List! ' + getItemName(item))
-            return 9999.0
 
                 
 def getTradeInGameMessage(stash, item):
@@ -131,7 +131,7 @@ def findDivDeals(stashes):
         items = s['items']
         for i in items:
             if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i):
-                #print(getItemName(i))
+                #print(getItemSellingOffer(i))
                 profit =  getProfitMargin(i)
                 if profit > 3.0:
                     outputText = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
@@ -161,13 +161,23 @@ MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 
-#data = loadApiPageFromFile('response.txt')
+'''
+for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
+	print(str(k) + ': ' + str(v))
 
 for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
 	print(str(k) + ': ' + str(v))
+'''
 
+# LOCAL
+'''
+data = loadApiPageFromFile('lastresponse.txt')
+stashes = data['stashes']
+findDivDeals(stashes)
+'''
 
-#createStashDumpFile(TOTAL_PAGES, getNinjaNextPageId())
+#ONLINE
+
 print('Starting sniper')
 next_change_id = getNinjaNextPageId()
 for k in range(9999):
