@@ -67,7 +67,7 @@ def isSellingBuyout(item):
     return "note" in item.keys() and item['note'].startswith("~b/o")
 
 def isOfferValid(item):
-    hasNote = "note" in item.keys()
+    hasNote = "note" in item.keys() and item['note'].startswith('~')
     if hasNote:
         offer = getItemSellingOffer(item)
         hasPrice = offer[0].startswith("~b/o") or offer[0].startswith("~price")
@@ -77,9 +77,9 @@ def isOfferValid(item):
     return conditions
 
 def getItemSellingOffer(item):
+    print(item['note'])
     o = re.split(r'(\~*\s*)(\d+(?:\.\d+)?(?:\/\d+)?)(\W*)', item['note'])
     return [o[0], o[2], o[4]]
-    #return item['note'].split()
 
 def offer2chaos(offer):
     quantity = float(eval(offer[1]))
@@ -232,11 +232,10 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
 '''
 
 # LOCAL
-data = loadApiPageFromFile('mirrordump.txt')
+data = loadApiPageFromFile('response.txt')
+splashScreen()
 stashes = data['stashes']
 findDeals(stashes)
-findDivDeals(stashes)
-findUniqueFlaskDeals(stashes)
 
 '''
 #ONLINE
