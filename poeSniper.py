@@ -42,12 +42,12 @@ WAND_LIST = ['Driftwood Wand','Goat\'s Horn','Carved Wand','Quartz Wand','Spiral
 
 # Armour Lists
 # Body Armour
-STR_BODY_ARMOUR_LIST = []
-DEX_BODY_ARMOUR_LIST = []
-INT_BODY_ARMOUR_LIST = []
-STR_DEX_BODY_ARMOUR_LIST = []
-STR_INT_BODY_ARMOUR_LIST = []
-DEX_INT_BODY_ARMOUR_LIST = []
+STR_BODY_ARMOUR_LIST = ['Plate Vest','Chestplate','Copper Plate','War Plate','Full Plate','Arena Plate','Lordly Plate','Bronze Plate','Battle Plate','Sun Plate','Colosseum Plate','Majestic Plate','Golden Plate','Crusader Plate','Astral Plate','Gladiator Plate','Glorious Plate']
+DEX_BODY_ARMOUR_LIST = ['Shabby Jerkin','Strapped Leather','Buckskin Tunic','Wild Leather','Full Leather','Sun Leather','Thief\'s Garb','Eelskin Tunic','Frontier Leather','Glorious Leather','Coronal Leather','Cutthroat\'s Garb','Sharkskin Tunic','Destiny Leather','Exquisite Leather','Zodiac Leather','Assassin\'s Garb']
+INT_BODY_ARMOUR_LIST = ['Simple Robe','Silken Vest','Scholar\'s Robe','Silken Garb','Mage\'s Vestment','Silk Robe','Cabalist Regalia','Sage\'s Robe','Silken Wrap','Conjurer\'s Vestment','Spidersilk Robe','Destroyer Regalia','Savant\'s Robe','Necromancer Silks','Occultist\'s Vestment','Widowsilk Robe','Vaal Regalia']
+STR_DEX_BODY_ARMOUR_LIST = ['Scale Vest','Light Brigandine','Scale Doublet','Infantry Brigandine','Full Scale Armour','Soldier\'s Brigandine','Field Lamellar','Wyrmscale Doublet','Hussar Brigandine','Full Wyrmscale','Commander\'s Brigandine','Battle Lamellar','Dragonscale Doublet','Desert Brigandine','Full Dragonscale','General\'s Brigandine','Triumphant Lamellar']
+STR_INT_BODY_ARMOUR_LIST = ['Chainmail Vest','Chainmail Tunic','Ringmail Coat','Chainmail Doublet','Full Ringmail','Full Chainmail','Holy Chainmail','Latticed Ringmail','Crusader Chainmail','Ornate Ringmail','Chain Hauberk','Devout Chainmail','Loricated Ringmail','Conquest Chainmail','Elegant Ringmail','Saint\'s Hauberk','Saintly Chainmail']
+DEX_INT_BODY_ARMOUR_LIST = ['Padded Vest','Oiled Vest','Padded Jacket','Oiled Coat','Scarlet Raiment','Waxed Garb','Bone Armour','Quilted Jacket','Sleek Coat','Crimson Raiment','Lacquered Garb','Crypt Armour','Sentinel Jacket','Varnished Coat','Blood Raiment','Sadist Garb','Carnal Armour']
 
 # Gloves
 STR_GLOVES_LIST = []
