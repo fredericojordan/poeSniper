@@ -6,8 +6,8 @@ import winsound
 import base64
 
 PLAY_SOUNDS = True
-MIN_PROFIT = 3.0
-MIN_ROI = 0.1
+MIN_PROFIT = -100.0
+MIN_ROI = 0.000000001
 
 CURRENT_LEAGUE = "Legacy"
 
@@ -66,8 +66,20 @@ def isSelling(item):
 def isSellingBuyout(item):
     return "note" in item.keys() and item['note'].startswith("~b/o")
 
+def isOfferValid(item):
+    hasNote = "note" in item.keys()
+    if hasNote:
+        offer = getItemSellingOffer(item)
+        hasPrice = offer[0].startswith("~b/o") or offer[0].startswith("~price")
+        priceIsNotNull = eval(offer[1]) > 0.0
+    
+    conditions = hasNote and hasPrice and priceIsNotNull
+    return conditions
+
 def getItemSellingOffer(item):
-    return item['note'].split()
+    o = re.split(r'(\~*\s*)(\d+(?:\.\d+)?(?:\/\d+)?)(\W*)', item['note'])
+    return [o[0], o[2], o[4]]
+    #return item['note'].split()
 
 def offer2chaos(offer):
     quantity = float(eval(offer[1]))
@@ -149,25 +161,23 @@ def getTradeInfoMessage(item):
     roi = getROI(item)
     return '[Item Found! Investment: {:.1f}c / Profit: {:.1f}c / ROI: {:.2%}]'.format(investment, profit, roi)
 
-def findDivDeals(stashes):
+def findDeals(stashes):
     for s in stashes:
         items = s['items']
         for i in items:
-            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i):
-                if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                    soundAlert()
-                    outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
-                    print(outputText)
+            if getItemLeague(i) == CURRENT_LEAGUE and isOfferValid(i):
                 
-def findUniqueFlaskDeals(stashes):
-    for s in stashes:
-        items = s['items']
-        for i in items:
-            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Unique and isFlask(i) and isSellingBuyout(i):
-                if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                    soundAlert()
-                    outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
-                    print(outputText)
+                # Divination Cards
+                if getItemType(i) == ITEM_TYPES.Card:
+                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
+                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
+                        print(outputText)
+            
+                # UniqueFlasks
+                if getItemType(i) == ITEM_TYPES.Unique and 'Flask' in getItemTypeLine(i):
+                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
+                        outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
+                        print(outputText)
 
 def createStashDumpFile(npages, starting_page=""):
     nextPageID = starting_page
@@ -222,14 +232,14 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
 '''
 
 # LOCAL
-'''
-data = loadApiPageFromFile('lastresponse.txt')
+data = loadApiPageFromFile('mirrordump.txt')
 stashes = data['stashes']
+findDeals(stashes)
 findDivDeals(stashes)
 findUniqueFlaskDeals(stashes)
+
 '''
 #ONLINE
-
 splashScreen()
 next_change_id = getNinjaNextPageId()
 while(True):
@@ -240,3 +250,5 @@ while(True):
     findUniqueFlaskDeals(stashes)
     next_change_id = data['next_change_id']
     time.sleep(1)
+    
+'''
