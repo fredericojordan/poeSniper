@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import re
 
 CURRENT_LEAGUE = "Legacy"
 API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
@@ -83,8 +84,13 @@ def offer2chaos(offer):
 def getItemSellingPrice(item):
     return offer2chaos(getItemSellingOffer(item))
  
-def getItemName(item):
+
+def getItemTypeLine(item):
     return item["typeLine"]
+
+def getItemName(item):
+    name = re.sub(r'<<.*>>', '', item['name'])
+    return name
 
 def getItemType(item):
     return item["frameType"]
@@ -106,13 +112,19 @@ def isEmpty(stash):
 
 def getItemMarketPrice(item):
     if getItemType(item) == ITEM_TYPES.Card:
-        if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Card]:
-            return MARKET_PRICES[ITEM_TYPES.Card][getItemName(item)]
-
+        if getItemTypeLine(item) in MARKET_PRICES[ITEM_TYPES.Card]:
+            return MARKET_PRICES[ITEM_TYPES.Card][getItemTypeLine(item)]
+            
+    if getItemType(item) == ITEM_TYPES.Unique and 'Flask' in getItemTypeLine(item):
+        if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
+            return MARKET_PRICES[ITEM_TYPES.Unique][getItemName(item)]
+        else:
+            print('Item not in price list! ' + getItemName(item))
+            return 9999.0
                 
 def getTradeInGameMessage(stash, item):
     characterName = getCharacterName(stash)
-    itemName = getItemName(item)
+    itemName = getItemTypeLine(item)
     price = getItemSellingOffer(item)[1]
     currency = getItemSellingOffer(item)[2]
     league = getItemLeague(item)
@@ -137,7 +149,16 @@ def findDivDeals(stashes):
                     outputText = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
                     print(outputText)
                 
-
+def findUniqueFlaskDeals(stashes):
+    for s in stashes:
+        items = s['items']
+        for i in items:
+            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Unique and 'Flask' in getItemTypeLine(i) and isSellingBuyout(i):
+                #print(getItemName(i))
+                profit =  getProfitMargin(i)
+                if profit > 3.0:
+                    outputText = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
+ 
 
 def createStashDumpFile(npages, starting_page=STARTING_PAGE):
     nextPageID = starting_page
@@ -174,8 +195,8 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
 data = loadApiPageFromFile('lastresponse.txt')
 stashes = data['stashes']
 findDivDeals(stashes)
+findUniqueFlaskDeals(stashes)
 '''
-
 #ONLINE
 
 print('Starting sniper')
@@ -184,6 +205,7 @@ for k in range(9999):
 	data = getApiPage(next_change_id)
 	stashes = data['stashes']
 	findDivDeals(stashes)
+	findUniqueFlaskDeals(stashes)
 	next_change_id = data['next_change_id']
 	time.sleep(1)
 	print('Page #' + str(k+1))
