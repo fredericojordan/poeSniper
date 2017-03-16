@@ -253,7 +253,9 @@ def findDeals(stashes):
                         
                 # Unique Weapons
                 if getItemFrameType(i) == ITEM_TYPES.Unique and isWeapon(i):
-                    print('lewl')
+                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
+                        outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
+                        print(outputText)
                     
                     
                     
