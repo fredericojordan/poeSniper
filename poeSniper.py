@@ -2,17 +2,22 @@ import requests
 import json
 import time
 import re
+import winsound
+import base64
+
+PLAY_SOUNDS = True
+MIN_PROFIT = 3.0
+MIN_ROI = 0.1
 
 CURRENT_LEAGUE = "Legacy"
-API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
-STARTING_PAGE = "49919976-52967025-49502222-57596848-53578103" # empty string for first page
-TOTAL_PAGES = 50
-MARKET_PRICES = [{} for _ in range(10)]
 
+API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
 UNIQUE_FLASK_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
 CARD_PRICES_URL = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
 PROPHECY_PRICES_URL = "http://api.poe.ninja/api/Data/GetProphecyOverview"
 CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
+
+MARKET_PRICES = [{} for _ in range(10)]
 
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
@@ -38,9 +43,7 @@ def getApiPage(page_id=""):
     
     if response.status_code == 200:
         data = response.json()
-        with open('lastresponse.txt', 'w') as outfile:
-            json.dump(data, outfile)
-            outfile.close()
+        dumpToFile(data, 'lastresponse.txt')
         return data
     else:
         raise ConnectionError('API request returned status code {}: {}!'.format(response.status_code, response.reason))
@@ -67,19 +70,20 @@ def getItemSellingOffer(item):
     return item['note'].split()
 
 def offer2chaos(offer):
+    quantity = float(eval(offer[1]))
+    
     if "chaos" in offer[2]:
-        return eval(offer[1])
-        #return float(offer[1])
+        return quantity
     
     if "fus" in offer[2]:
-        return  float(eval(offer[1]))*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
+        return  quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
     
     if "gcp" in offer[2]:
-        return  float(eval(offer[1]))*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
+        return  quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
     
-    for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
-        if offer[2].lower() in k.lower():
-            return float(eval(offer[1])*v)
+    for currency,value in MARKET_PRICES[ITEM_TYPES.Currency].items():
+        if offer[2].lower() in currency.lower():
+            return quantity*value
 
 def getItemSellingPrice(item):
     return offer2chaos(getItemSellingOffer(item))
@@ -98,6 +102,9 @@ def getItemType(item):
 def getItemLeague(item):
     return item["league"]
 
+def isFlask(item):
+    return 'Flask' in getItemTypeLine(item)
+
 def getStashName(stash):
     return stash["stash"]
 
@@ -115,7 +122,7 @@ def getItemMarketPrice(item):
         if getItemTypeLine(item) in MARKET_PRICES[ITEM_TYPES.Card]:
             return MARKET_PRICES[ITEM_TYPES.Card][getItemTypeLine(item)]
             
-    if getItemType(item) == ITEM_TYPES.Unique and 'Flask' in getItemTypeLine(item):
+    if getItemType(item) == ITEM_TYPES.Unique and isFlask(item):
         if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
             return MARKET_PRICES[ITEM_TYPES.Unique][getItemName(item)]
         else:
@@ -124,43 +131,45 @@ def getItemMarketPrice(item):
                 
 def getTradeInGameMessage(stash, item):
     characterName = getCharacterName(stash)
-    itemName = getItemTypeLine(item)
+    itemName = getItemName(item)
+    if itemName:
+        itemName += ' '
+    itemTypeLine = getItemTypeLine(item)
     price = getItemSellingOffer(item)[1]
     currency = getItemSellingOffer(item)[2]
     league = getItemLeague(item)
     stashName = getStashName(stash)
     w = item.get('w')
     h = item.get('h')
-    return '@{} Hi, I would like to buy your {} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, price, currency, league, stashName, w, h)
+    return '@{} Hi, I would like to buy your {}{} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, itemTypeLine, price, currency, league, stashName, w, h)
 
-def getTradeInfoMessage(profit, item):
-	investment = getItemSellingPrice(item)
-	roi = profit/float(investment)
-	return '[Item Found! Investment: {} / Profit: {} / ROI: {}] '.format(investment, profit, str(roi))
+def getTradeInfoMessage(item):
+    investment = getItemSellingPrice(item)
+    profit = getProfitMargin(item)
+    roi = getROI(item)
+    return '[Item Found! Investment: {:.1f}c / Profit: {:.1f}c / ROI: {:.2%}]'.format(investment, profit, roi)
 
 def findDivDeals(stashes):
     for s in stashes:
         items = s['items']
         for i in items:
             if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Card and isSellingBuyout(i):
-                #print(getItemSellingOffer(i))
-                profit =  getProfitMargin(i)
-                if profit > 3.0:
-                    outputText = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
+                if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
+                    soundAlert()
+                    outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
                     print(outputText)
                 
 def findUniqueFlaskDeals(stashes):
     for s in stashes:
         items = s['items']
         for i in items:
-            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Unique and 'Flask' in getItemTypeLine(i) and isSellingBuyout(i):
-                #print(getItemName(i))
-                profit =  getProfitMargin(i)
-                if profit > 3.0:
-                    outputText = getTradeInfoMessage(profit, i) + getTradeInGameMessage(s, i)
- 
+            if getItemLeague(i) == CURRENT_LEAGUE and getItemType(i) == ITEM_TYPES.Unique and isFlask(i) and isSellingBuyout(i):
+                if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
+                    soundAlert()
+                    outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
+                    print(outputText)
 
-def createStashDumpFile(npages, starting_page=STARTING_PAGE):
+def createStashDumpFile(npages, starting_page=""):
     nextPageID = starting_page
     StashDump = open('StashDump.txt', 'w')
     for _ in range(npages):
@@ -176,6 +185,28 @@ def getNinjaNextPageId():
 def getProfitMargin(item):
     return getItemMarketPrice(item) - getItemSellingPrice(item)
 
+def getROI(item):
+    if getItemSellingPrice(item) == 0:
+        return 9999.0
+    return getProfitMargin(item)/getItemSellingPrice(item)
+
+def soundAlert():
+    if (PLAY_SOUNDS):
+        winsound.PlaySound('SystemHand', winsound.SND_ALIAS)
+
+def dumpToFile(data, filename):
+    with open(filename, 'w') as outfile:
+        json.dump(data, outfile)
+        outfile.close()
+        
+def splashScreen():
+    print(base64.b64decode('X19fX19fX19fXyAgICAgX19fX19fX19fX18gICBfX19fX19fX18gICAgICAuX18=').decode("utf-8"))
+    print(base64.b64decode('XF9fX19fXyAgIFxfX19fXF8gICBfX19fXy8gIC8gICBfX19fXy8gX19fXyB8X198X19fX18gICBfX19fX19fX19fXw==').decode("utf-8") )
+    print(base64.b64decode('IHwgICAgIF9fXy8gIF8gXHwgICAgX18pXyAgIFxfX19fXyAgXCAvICAgIFx8ICBcX19fXyBcXy8gX18gXF8gIF9fIFw=').decode("utf-8") )
+    print(base64.b64decode('IHwgICAgfCAgKCAgPF8+ICkgICAgICAgIFwgIC8gICAgICAgIFwgICB8ICBcICB8ICB8Xz4gPiAgX19fL3wgIHwgXC8=').decode("utf-8") )
+    print(base64.b64decode('IHxfX19ffCAgIFxfX19fL19fX19fX18gIC8gL19fX19fX18gIC9fX198ICAvX198ICAgX18vIFxfX18gID5fX3w=').decode("utf-8") )
+    print(base64.b64decode('ICAgICAgICAgICAgICAgICAgICAgICBcLyAgICAgICAgICBcLyAgICAgXC8gICB8X198ICAgICAgICBcLw==').decode("utf-8") )
+    print()
 
 MARKET_PRICES[ITEM_TYPES.Card].update(getNinjaPrices(CARD_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
@@ -184,10 +215,10 @@ MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 
 '''
 for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
-	print(str(k) + ': ' + str(v))
+    print(str(k) + ': ' + str(v))
 
 for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
-	print(str(k) + ': ' + str(v))
+    print(str(k) + ': ' + str(v))
 '''
 
 # LOCAL
@@ -199,15 +230,13 @@ findUniqueFlaskDeals(stashes)
 '''
 #ONLINE
 
-print('Starting sniper')
+splashScreen()
 next_change_id = getNinjaNextPageId()
-for k in range(9999):
-	data = getApiPage(next_change_id)
-	stashes = data['stashes']
-	findDivDeals(stashes)
-	findUniqueFlaskDeals(stashes)
-	next_change_id = data['next_change_id']
-	time.sleep(1)
-	print('Page #' + str(k+1))
-
-print("Done!")
+while(True):
+    print('Fetching page #{}...'.format(next_change_id))
+    data = getApiPage(next_change_id)
+    stashes = data['stashes']
+    findDivDeals(stashes)
+    findUniqueFlaskDeals(stashes)
+    next_change_id = data['next_change_id']
+    time.sleep(1)
