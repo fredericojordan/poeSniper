@@ -6,8 +6,8 @@ import winsound
 import base64
 
 PLAY_SOUNDS = True
-MIN_PROFIT = -100.0
-MIN_ROI = 0.000000001
+MIN_PROFIT = 3.0
+MIN_ROI = 0.05
 
 CURRENT_LEAGUE = "Legacy"
 
@@ -15,6 +15,9 @@ API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
 UNIQUE_FLASK_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueFlaskOverview"
 CARD_PRICES_URL = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
 PROPHECY_PRICES_URL = "http://api.poe.ninja/api/Data/GetProphecyOverview"
+UNIQUE_ARMOUR_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueArmourOverview"
+UNIQUE_WEAPON_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueWeaponOverview"
+UNIQUE_MAP_PRICES_URL = "http://api.poe.ninja/api/Data/GetMapOverview"
 CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
 
 MARKET_PRICES = [{} for _ in range(10)]
@@ -77,7 +80,6 @@ def isOfferValid(item):
     return conditions
 
 def getItemSellingOffer(item):
-    print(item['note'])
     o = re.split(r'(\~*\s*)(\d+(?:\.\d+)?(?:\/\d+)?)(\W*)', item['note'])
     return [o[0], o[2], o[4]]
 
@@ -221,6 +223,9 @@ def splashScreen():
 MARKET_PRICES[ITEM_TYPES.Card].update(getNinjaPrices(CARD_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
+MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_WEAPON_PRICES_URL))
+MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ARMOUR_PRICES_URL))
+MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 
 '''
@@ -232,10 +237,11 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
 '''
 
 # LOCAL
-data = loadApiPageFromFile('response.txt')
+data = loadApiPageFromFile('lastresponse.txt')
 splashScreen()
 stashes = data['stashes']
 findDeals(stashes)
+print("Done!")
 
 '''
 #ONLINE
@@ -249,5 +255,4 @@ while(True):
     findUniqueFlaskDeals(stashes)
     next_change_id = data['next_change_id']
     time.sleep(1)
-    
 '''
