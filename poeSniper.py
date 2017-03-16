@@ -22,8 +22,25 @@ CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
 
 MARKET_PRICES = [{} for _ in range(10)]
 
+AXE1H_LIST = ['Rusted Hatchet','Jade Hatchet','Boarding Axe','Cleaver','Broad Axe','Arming Axe','Decorative Axe','Spectral Axe','Etched Hatchet','Jasper Axe','Tomahawk','Wrist Chopper','War Axe','Chest Splitter','Ceremonial Axe','Wraith Axe','Engraved Hatchet','Karui Axe','Siege Axe','Reaver Axe','Butcher Axe','Vaal Hatchet','Royal Axe','Infernal Axe','Runic Hatchet']
+AXE2H_LIST = ['Stone Axe','Jade Chopper','Woodsplitter','Poleaxe','Double Axe','Gilded Axe','Shadow Axe','Dagger Axe','Jasper Chopper','Timber Axe','Headsman Axe','Labrys','Noble Axe','Abyssal Axe','Karui Chopper','Talon Axe','Sundering Axe','Ezomyte Axe','Vaal Axe','Despot Axe','Void Axe','Fleshripper']
+BOW_LIST = ['Crude Bow','Short Bow','Long Bow','Composite Bow','Recurve Bow','Bone Bow','Royal Bow','Death Bow','Grove Bow','Reflex Bow','Decurve Bow','Compound Bow','Sniper Bow','Ivory Bow','Highborn Bow','Decimation Bow','Thicket Bow','Steelwood Bow','Citadel Bow','Ranger Bow','Assassin Bow','Spine Bow','Imperial Bow','Harbinger Bow','Maraketh Bow']
+CLAW_LIST = []
+DAGGER_LIST = []
+MACE1H_LIST = []
+MACE2H_LIST = []
+SCEPTRE_LIST = []
+STAFF_LIST = []
+SWORD1H_LIST = []
+SWORD2H_LIST = []
+SWORDTHRUST_LIST = []
+WAND_LIST = []
+
+
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
+
+
 
 def getNinjaPrices(url):
     params = {'league': CURRENT_LEAGUE, 'time': time.strftime("%Y-%m-%d")}
@@ -102,7 +119,6 @@ def offer2chaos(offer):
 def getItemSellingPrice(item):
     return offer2chaos(getItemSellingOffer(item))
  
-
 def getItemTypeLine(item):
     return item["typeLine"]
 
@@ -110,7 +126,7 @@ def getItemName(item):
     name = re.sub(r'<<.*>>', '', item['name'])
     return name
 
-def getItemType(item):
+def getItemFrameType(item):
     return item["frameType"]
     
 def getItemLeague(item):
@@ -118,6 +134,61 @@ def getItemLeague(item):
 
 def isFlask(item):
     return 'Flask' in getItemTypeLine(item)
+
+def isWeapon(item):
+    c = is1HAxe(item) or \
+        is2HAxe(item) or \
+        isBow(item) or \
+        isClaw(item) or \
+        isDagger(item) or \
+        is1HMace(item) or \
+        is2HMace(item) or \
+        isSceptre(item) or \
+        isStaff(item) or \
+        is1HSword(item) or \
+        is2HSword(item) or \
+        isThrustSword(item) or \
+        isWand(item)
+    return c
+
+def is1HAxe(item):
+    return getItemTypeLine(item) in AXE1H_LIST
+
+def is2HAxe(item):
+    return getItemTypeLine(item) in AXE2H_LIST
+    
+def isBow(item):
+    return getItemTypeLine(item) in BOW_LIST
+    
+def isClaw(item):
+    return getItemTypeLine(item) in CLAW_LIST
+
+def isDagger(item):
+    return getItemTypeLine(item) in DAGGER_LIST
+
+def is1HMace(item):
+    return getItemTypeLine(item) in MACE1H_LIST
+
+def is2HMace(item):
+    return getItemTypeLine(item) in MACE2H_LIST
+
+def isSceptre(item):
+    return getItemTypeLine(item) in SCEPTRE_LIST
+    
+def isStaff(item):
+    return getItemTypeLine(item) in STAFF_LIST
+    
+def is1HSword(item):
+    return getItemTypeLine(item) in SWORD1H_LIST
+
+def is2HSword(item):
+    return getItemTypeLine(item) in SWORD2H_LIST
+
+def isThrustSword(item):
+    return getItemTypeLine(item) in SWORDTHRUST_LIST
+
+def isWand(item):
+    return getItemTypeLine(item) in WAND_LIST
 
 def getStashName(stash):
     return stash["stash"]
@@ -132,11 +203,11 @@ def isEmpty(stash):
     return stash["items"] == []
 
 def getItemMarketPrice(item):
-    if getItemType(item) == ITEM_TYPES.Card:
+    if getItemFrameType(item) == ITEM_TYPES.Card:
         if getItemTypeLine(item) in MARKET_PRICES[ITEM_TYPES.Card]:
             return MARKET_PRICES[ITEM_TYPES.Card][getItemTypeLine(item)]
             
-    if getItemType(item) == ITEM_TYPES.Unique and isFlask(item):
+    if getItemFrameType(item) == ITEM_TYPES.Unique and isFlask(item):
         if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
             return MARKET_PRICES[ITEM_TYPES.Unique][getItemName(item)]
         else:
@@ -168,19 +239,24 @@ def findDeals(stashes):
         items = s['items']
         for i in items:
             if getItemLeague(i) == CURRENT_LEAGUE and isOfferValid(i):
-                
                 # Divination Cards
-                if getItemType(i) == ITEM_TYPES.Card:
+                if getItemFrameType(i) == ITEM_TYPES.Card:
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
                         outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
                         print(outputText)
             
                 # UniqueFlasks
-                if getItemType(i) == ITEM_TYPES.Unique and 'Flask' in getItemTypeLine(i):
+                if getItemFrameType(i) == ITEM_TYPES.Unique and isFlask(i):
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
                         outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
                         print(outputText)
-
+                        
+                # Unique Weapons
+                if getItemFrameType(i) == ITEM_TYPES.Unique and isWeapon(i):
+                    print('lewl')
+                    
+                    
+                    
 def createStashDumpFile(npages, starting_page=""):
     nextPageID = starting_page
     StashDump = open('StashDump.txt', 'w')
