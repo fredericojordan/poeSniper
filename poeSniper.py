@@ -236,16 +236,18 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Card].items():
     print(str(k) + ': ' + str(v))
 '''
 
-# LOCAL
-data = loadApiPageFromFile('lastresponse.txt')
 splashScreen()
+
+# LOCAL
+pagefile = 'lastresponse.txt'
+print('Loading page from file ' + pagefile)
+data = loadApiPageFromFile(pagefile)
 stashes = data['stashes']
 findDeals(stashes)
 print("Done!")
 
 '''
 #ONLINE
-splashScreen()
 next_change_id = getNinjaNextPageId()
 while(True):
     print('Fetching page #{}...'.format(next_change_id))
