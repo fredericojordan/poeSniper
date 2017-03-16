@@ -40,6 +40,46 @@ SWORD2H_LIST = ['Corroded Blade','Longsword','Bastard Sword','Two-Handed Sword',
 SWORDTHRUST_LIST = ['Rusted Spike','Whalebone Rapier','Battered Foil','Basket Rapier','Jagged Foil','Antique Rapier','Elegant Foil','Thorn Rapier','Smallsword','Wyrmbone Rapier','Burnished Foil','Estoc','Serrated Foil','Primeval Rapier','Fancy Foil','Apex Rapier','Courtesan Sword','Dragonbone Rapier','Tempered Foil','Pecoraro','Spiraled Foil','Vaal Rapier','Jewelled Foil','Harpy Rapier','Dragoon Sword']
 WAND_LIST = ['Driftwood Wand','Goat\'s Horn','Carved Wand','Quartz Wand','Spiraled Wand','Sage Wand','Pagan Wand','Faun\'s Horn','Engraved Wand','Crystal Wand','Serpent Wand','Omen Wand','Heathen Wand','Demon\'s Horn Wand','Opal Wand','Tornado Wand','Prophecy Wand','Profane Wand']
 
+# Armour Lists
+# Body Armour
+STR_BODY_ARMOUR_LIST = []
+DEX_BODY_ARMOUR_LIST = []
+INT_BODY_ARMOUR_LIST = []
+STR_DEX_BODY_ARMOUR_LIST = []
+STR_INT_BODY_ARMOUR_LIST = []
+DEX_INT_BODY_ARMOUR_LIST = []
+
+# Gloves
+STR_GLOVES_LIST = []
+DEX_GLOVES_LIST = []
+INT_GLOVES_LIST = []
+STR_DEX_GLOVES_LIST = []
+STR_INT_GLOVES_LIST = []
+DEX_INT_GLOVES_LIST = []
+
+# Helmet
+STR_HELMET_LIST = []
+DEX_HELMET_LIST = []
+INT_HELMET_LIST = []
+STR_DEX_HELMET_LIST = []
+STR_INT_HELMET_LIST = []
+DEX_INT_HELMET_LIST = []
+
+# Boots
+STR_BOOTS_LIST = []
+DEX_BOOTS_LIST = []
+INT_BOOTS_LIST = []
+STR_DEX_BOOTS_LIST = []
+STR_INT_BOOTS_LIST = []
+DEX_INT_BOOTS_LIST = []
+
+# Shield
+STR_SHIELD_LIST = []
+DEX_SHIELD_LIST = []
+INT_SHIELD_LIST = []
+STR_DEX_SHIELD_LIST = []
+STR_INT_SHIELD_LIST = []
+DEX_INT_SHIELD_LIST = []
 
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
@@ -138,6 +178,149 @@ def getItemLeague(item):
 
 def isFlask(item):
     return 'Flask' in getItemTypeLine(item)
+
+def isArmour(item):
+    c = isGloves(item) or \
+        isBoots(item) or \
+        isHelemt(item) or \
+        isShield(item) or \
+        isBodyArmour(item)
+    return c
+    
+def isBodyArmour(item):
+    c = isStrBodyArmour(item) or \
+        isDexBodyArmour(item) or \
+        isIntBodyArmour(item) or \
+        isStrDexBodyArmour(item) or \
+        isStrIntBodyArmour(item) or \
+        isDexIntBodyArmour(item)
+    return c
+
+def isStrBodyArmour(item):
+    return getItemTypeLine(item) in STR_BODY_ARMOUR_LIST
+
+def isDexBodyArmour(item):
+    return getItemTypeLine(item) in DEX_BODY_ARMOUR_LIST
+    
+def isIntBodyArmour(item):
+    return getItemTypeLine(item) in INT_BODY_ARMOUR_LIST    
+
+def isStrDexBodyArmour(item):
+    return getItemTypeLine(item) in STR_DEX_BODY_ARMOUR_LIST
+
+def isStrIntBodyArmour(item):
+    return getItemTypeLine(item) in STR_INT_BODY_ARMOUR_LIST
+    
+def isDexIntBodyArmour(item):
+    return getItemTypeLine(item) in DEX_INT_BODY_ARMOUR_LIST
+
+def isGloves(item):
+    c = isStrGloves(item) or \
+        isDexGloves(item) or \
+        isIntGloves(item) or \
+        isStrDexGloves(item) or \
+        isStrIntGloves(item) or \
+        isDexIntGloves(item)
+    return c
+
+def isStrGloves(item):
+    return getItemTypeLine(item) in STR_GLOVES_LIST
+
+def isDexGloves(item):
+    return getItemTypeLine(item) in DEX_GLOVES_LIST
+
+def isIntGloves(item):
+    return getItemTypeLine(item) in INT_GLOVES_LIST
+
+def isStrDexGloves(item):
+    return getItemTypeLine(item) in STR_DEX_GLOVES_LIST
+
+def isStrIntGloves(item):
+    return getItemTypeLine(item) in STR_INT_GLOVES_LIST
+
+def isDexIntGloves(item):
+    return getItemTypeLine(item) in DEX_INT_GLOVES_LIST
+
+def isBoots(item):
+    c = isStrBoots(item) or \
+        isDexBoots(item) or \
+        isIntBoots(item) or \
+        isStrDexBoots(item) or \
+        isStrIntBoots(item) or \
+        isDexIntBoots(item)
+    return c
+
+def isStrBoots(item):
+    return getItemTypeLine(item) in STR_BOOTS_LIST
+    
+def isDexBoots(item):
+    return getItemTypeLine(item) in DEX_BOOTS_LIST
+    
+def isIntBoots(item):
+    return getItemTypeLine(item) in INT_BOOTS_LIST
+
+def isStrDexBoots(item):
+    return getItemTypeLine(item) in STR_DEX_BOOTS_LIST
+
+def isStrIntBoots(item):
+    return getItemTypeLine(item) in STR_INT_BOOTS_LIST
+
+def isDexIntBoots(item):
+    return getItemTypeLine(item) in DEX_INT_BOOTS_LIST
+
+def isHelmet(item):
+    c = isStrHelmet(item) or \
+        isDexHelmet(item) or \
+        isIntHelmet(item) or \
+        isStrDexHelmet(item) or \
+        isStrIntHelmet(item) or \
+        isDexIntHelmet(item)
+    return c
+
+def isStrHelemt(item):
+    return getItemTypeLine(item) in STR_HELMET_LIST
+
+def isDexHelmet(item):
+    return getItemTypeLine(item) in DEX_HELMET_LIST
+
+def isIntHelmet(item):
+    return getItemTypeLine(item) in INT_HELMET_LIST
+
+def isStrDexHelmet(item):
+    return getItemTypeLine(item) in STR_DEX_HELMET_LIST
+
+def isStrIntHelmet(item):
+    return getItemTypeLine(item) in STR_INT_HELMET_LIST
+
+def isDexIntHelmet(item):
+    return getItemTypeLine(item) in DEX_INT_HELMET_LIST
+
+def isShield(item):
+    c = isStrShield(item) or \
+        isDexShield(item) or \
+        isIntShield(item) or \
+        isStrDexShield(item) or \
+        isStrIntShield(item) or \
+        isDexIntShield(item)
+    return c
+
+def isStrShield(item):
+    return getItemTypeLine(item) in STR_SHIELD_LIST
+
+def isDexShield(item):
+    return getItemTypeLine(item) in DEX_SHIELD_LIST
+
+def isIntShield(item):
+    return getItemTypeLine(item) in INT_SHIELD_LIST
+
+def isStrDexShield(item):
+    return getItemTypeLine(item) in STR_DEX_SHIELD_LIST
+
+def isStrIntShield(item):
+    return getItemTypeLine(item) in STR_INT_SHIELD_LIST
+
+def isDexIntShield(item):
+    return getItemTypeLine(item) in DEX_INT_SHIELD_LIST
 
 def isWeapon(item):
     c = is1HAxe(item) or \
@@ -260,7 +443,13 @@ def findDeals(stashes):
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
                         outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
                         print(outputText)
-                    
+                
+                # Unique Armour Pieces
+                if getItemFrameType(i) == ITEM_TYPES.Unique and isArmour(i):
+                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
+                        outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
+                        print(outputText)
+                
                     
                     
 def createStashDumpFile(npages, starting_page=""):
