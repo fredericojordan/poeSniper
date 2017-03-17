@@ -82,6 +82,16 @@ STR_DEX_SHIELD_LIST = ['Rotted Round Shield','Fir Round Shield','Studded Round S
 STR_INT_SHIELD_LIST = ['Plank Kite Shield','Linden Kite Shield','Reinforced Kite Shield','Layered Kite Shield','Ceremonial Kite Shield','Etched Kite Shield','Steel Kite Shield','Laminated Kite Shield','Angelic Kite Shield','Branded Kite Shield','Champion Kite Shield','Mosaic Kite Shield','Archon Kite Shield']
 DEX_INT_SHIELD_LIST = ['Spiked Bundle','Driftwood Spiked Shield','Alloyed Spiked Shield','Burnished Spiked Shield','Ornate Spiked Shield','Redwood Spiked Shield','Compound Spiked Shield','Polished Spiked Shield','Sovereign Spiked Shield','Alder Spiked Shield','Ezomyte Spiked Shield','Mirrored Spiked Shield','Supreme Spiked Shield']
 
+# Acessories
+# Amulet
+AMULET_LIST = ['Coral Amulet','Paua Amulet','Amber Amulet','Jade Amulet','Lapis Amulet','Gold Amulet','Agate Amulet','Citrine Amulet','Turquoise Amulet','Onyx Amulet','Marble Amulet','Blue Pearl Amulet']
+
+# Rings
+RING_LIST = ['Breach Ring','Coral Ring','Iron Ring','Paua Ring','Unset Ring','Sapphire Ring','Topaz Ring','Ruby Ring','Diamond Ring','Gold Ring','Moonstone Ring','Two-Stone Ring','Amethyst Ring','Prismatic Ring','Opal Ring','Steel Ring']
+
+# Belt
+BELT_LIST = ['Chain Belt','Rustic Sash','Heavy Belt','Leather Belt','Cloth Belt','Studded Belt','Vanguard Belt','Crystal Belt']
+
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
 
