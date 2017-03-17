@@ -67,12 +67,12 @@ STR_INT_HELMET_LIST = ['Rusted Coif','Soldier Helmet','Great Helmet','Crusader H
 DEX_INT_HELMET_LIST = ['Scare Mask','Plague Mask','Iron Mask','Festival Mask','Golden Mask','Raven Mask','Callous Mask','Regicide Mask','Harlequin Mask','Vaal Mask','Deicide Mask']
 
 # Boots
-STR_BOOTS_LIST = []
-DEX_BOOTS_LIST = []
-INT_BOOTS_LIST = []
-STR_DEX_BOOTS_LIST = []
-STR_INT_BOOTS_LIST = []
-DEX_INT_BOOTS_LIST = []
+STR_BOOTS_LIST = ['Iron Greaves','Steel Greaves','Plated Greaves','Reinforced Greaves','Antique Greaves','Ancient Greaves','Goliath Greaves','Vaal Greaves','Titan Greaves']
+DEX_BOOTS_LIST = ['Rawhide Boots','Goathide Boots','Deerskin Boots','Nubuck Boots','Eelskin Boots','Sharkskin Boots','Shagreen Boots','Stealth Boots','Slink Boots']
+INT_BOOTS_LIST = ['Wool Shoes','Velvet Slippers','Silk Slippers','Scholar Boots','Satin Slippers','Samite Slippers','Conjurer Boots','Arcanist Slippers','Sorcerer Boots']
+STR_DEX_BOOTS_LIST = ['Leatherscale Boots','Ironscale Boots','Bronzescale Boots','Steelscale Boots','Serpentscale Boots','Wyrmscale Boots','Hydrascale Boots','Dragonscale Boots','Two-Toned Boots']
+STR_INT_BOOTS_LIST = ['Chain Boots','Ringmail Boots','Mesh Boots','Riveted Boots','Zealot Boots','Soldier Boots','Legion Boots','Crusader Boots','Two-Toned Boots']
+DEX_INT_BOOTS_LIST = ['Wrapped Boots','Strapped Boots','Clasped Boots','Shackled Boots','Trapper Boots','Ambush Boots','Carnal Boots','Assassin\'s Boots','Murder Boots','Two-Toned Boots']
 
 # Shield
 STR_SHIELD_LIST = []
