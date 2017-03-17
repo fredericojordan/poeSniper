@@ -5,7 +5,8 @@ import re
 import winsound
 import base64
 
-# Interface Config
+# Config
+LOAD_FROM_LOCAL_DUMP_FILE = False
 PLAY_SOUNDS = True
 
 # Deal Finder Configs
@@ -84,8 +85,6 @@ DEX_INT_SHIELD_LIST = []
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
 
-
-
 def getNinjaPrices(url):
     params = {'league': CURRENT_LEAGUE, 'time': time.strftime("%Y-%m-%d")}
     response = requests.get(url, params = params)
@@ -123,35 +122,38 @@ def getItemCount(stashes):
     for i in range(len(stashes)):
         len(stashes[i]["items"])
     return count
+
+def hasNumbers(string):
+    return any(char.isdigit() for char in string)
     
 def isSelling(item):
-    return "note" in item.keys()
+    return "note" in item.keys() and item['note'].startswith('~') and hasNumbers(item['note'])
     
 def isSellingBuyout(item):
     return "note" in item.keys() and item['note'].startswith("~b/o")
 
+def getOfferQuantity(offer):
+    if offer[1].lstrip('0') == '':
+        return 0.0
+    else:
+        return float(eval(offer[1].lstrip('0')))
+
 def isOfferValid(item):
-    hasNote = "note" in item.keys() and item['note'].startswith('~')
-    if hasNote:
-        offer = getItemSellingOffer(item)
-        hasPrice = offer[0].startswith("~b/o") or offer[0].startswith("~price")
-        if '/0' not in offer[1]:
-            priceIsNotNull = eval(offer[1]) > 0.0
-        else:
-            priceIsNotNull = False
+    if not isSelling(item):
+        return False
     
-    conditions = hasNote and hasPrice and priceIsNotNull
-    return conditions
+    offer = getItemSellingOffer(item)
+    return (offer[0].startswith("~b/o") or offer[0].startswith("~price")) and \
+        '/0' not in offer[1] and \
+        '.0' not in offer[1] and \
+        getOfferQuantity(offer) > 0.0
 
 def getItemSellingOffer(item):
     o = re.split(r'(\~*\s*)(\d+(?:\.\d+)?(?:\/\d+)?)(\W*)', item['note'])
     return [o[0], o[2], o[4]]
 
 def offer2chaos(offer):
-    if '/0' not in offer[1] and '.0' not in offer[1]:
-        quantity = float(eval(offer[1]))
-    else:
-        quantity = 9999.0
+    quantity = getOfferQuantity(offer)
     
     if "chaos" in offer[2]:
         return quantity
@@ -176,14 +178,24 @@ def getItemName(item):
     name = re.sub(r'<<.*>>', '', item['name'])
     return name
 
+def getItemCompleteName(item):
+    itemName = getItemName(item)
+    if itemName:
+        itemName += ' '
+    itemTypeLine = getItemTypeLine(item)
+    return '{}{}'.format(itemName,itemTypeLine)
+
 def getItemFrameType(item):
     return item["frameType"]
     
 def getItemLeague(item):
     return item["league"]
 
+def isCorrupted(item):
+    return item["corrupted"]
+
 def isFlask(item):
-    return 'Flask' in getItemTypeLine(item)
+    return 'Flask' in getItemCompleteName(item)
 
 def isArmour(item):
     c = isGloves(item) or \
@@ -383,6 +395,21 @@ def isThrustSword(item):
 def isWand(item):
     return getItemTypeLine(item) in WAND_LIST
 
+def isDivinationCard(item):
+    return getItemFrameType(item) == ITEM_TYPES.Card
+
+def isUnique(item):
+    return getItemFrameType(item) == ITEM_TYPES.Unique
+
+def isLucrative(item):
+    return getProfitMargin(item) >= MIN_PROFIT and getROI(item) >= MIN_ROI
+
+def isItemOfInterest(item):
+    return isDivinationCard(item) or \
+           (isUnique(item) and isFlask(item)) or \
+           (isUnique(item) and isWeapon(item)) or \
+           (isUnique(item) and isArmour(item))
+
 def getStashName(stash):
     return stash["stash"]
 
@@ -396,67 +423,52 @@ def isEmpty(stash):
     return stash["items"] == []
 
 def getItemMarketPrice(item):
-    if getItemFrameType(item) == ITEM_TYPES.Card:
+    if isDivinationCard(item):
         if getItemTypeLine(item) in MARKET_PRICES[ITEM_TYPES.Card]:
             return MARKET_PRICES[ITEM_TYPES.Card][getItemTypeLine(item)]
             
-    if getItemFrameType(item) == ITEM_TYPES.Unique:
+    if isUnique(item):
         if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
             return MARKET_PRICES[ITEM_TYPES.Unique][getItemName(item)]
+        elif getItemCompleteName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
+            return MARKET_PRICES[ITEM_TYPES.Unique][getItemCompleteName(item)]
         else:
-            print('Item not in price list! ' + getItemName(item) + ' ' + getItemTypeLine(item))
-            return 0.0
+            print('Item not in price list! {}'.format(getItemCompleteName(item)))
+    
+    return 0.0
                 
 def getTradeInGameMessage(stash, item):
     characterName = getCharacterName(stash)
-    itemName = getItemName(item)
-    if itemName:
-        itemName += ' '
-    itemTypeLine = getItemTypeLine(item)
+    itemName = getItemCompleteName(item)
     price = getItemSellingOffer(item)[1]
     currency = getItemSellingOffer(item)[2]
     league = getItemLeague(item)
     stashName = getStashName(stash)
     w = item.get('w')
     h = item.get('h')
-    return '@{} Hi, I would like to buy your {}{} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, itemTypeLine, price, currency, league, stashName, w, h)
+    return '@{} Hi, I would like to buy your {} listed for {} {} in {} (stash tab "{}"; position: left {}, top {})'.format(characterName, itemName, price, currency, league, stashName, w, h)
 
 def getTradeInfoMessage(item):
+    itemName = getItemCompleteName(item)
     investment = getItemSellingPrice(item)
     profit = getProfitMargin(item)
     roi = getROI(item)
-    return '[Item Found! Investment: {:.1f}c / Profit: {:.1f}c / ROI: {:.2%}]'.format(investment, profit, roi)
+    return '[ I:{:.1f}c / P:{:.1f}c / ROI:{:.2%} / {}{} ]'.format(investment, profit, roi, "CORRUPTED " if isCorrupted(item) else "", itemName)
+
+def isGoodDeal(item):
+    return getItemLeague(item) == CURRENT_LEAGUE and \
+        not(getItemFrameType(item) == ITEM_TYPES.Currency) and \
+        isSelling(item) and \
+        isOfferValid(item) and \
+        isItemOfInterest(item) and \
+        isLucrative(item)
 
 def findDeals(stashes):
     for s in stashes:
         items = s['items']
         for i in items:
-            if getItemLeague(i) == CURRENT_LEAGUE and not(getItemFrameType(i) == ITEM_TYPES.Currency) and isOfferValid(i):
-                # Divination Cards
-                if getItemFrameType(i) == ITEM_TYPES.Card:
-                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
-                        print(outputText)
-            
-                # UniqueFlasks
-                if getItemFrameType(i) == ITEM_TYPES.Unique and isFlask(i):
-                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
-                        print(outputText)
-                        
-                # Unique Weapons
-                if getItemFrameType(i) == ITEM_TYPES.Unique and isWeapon(i):
-                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
-                        print(outputText)
-                
-                # Unique Armour Pieces
-                if getItemFrameType(i) == ITEM_TYPES.Unique and isArmour(i):
-                    if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
-                        print(outputText)
-                
-                    
+            if isGoodDeal(i):
+                print("{} {}".format(getTradeInfoMessage(i), getTradeInGameMessage(s, i)))
                     
 def createStashDumpFile(npages, starting_page=""):
     nextPageID = starting_page
@@ -497,16 +509,15 @@ def splashScreen():
     print(base64.b64decode('ICAgICAgICAgICAgICAgICAgICAgICBcLyAgICAgICAgICBcLyAgICAgXC8gICB8X198ICAgICAgICBcLw==').decode("utf-8") )
     print()
 
-MARKET_PRICES[ITEM_TYPES.Card].update(getNinjaPrices(CARD_PRICES_URL))
-MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
-MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
-MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_WEAPON_PRICES_URL))
-MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ARMOUR_PRICES_URL))
-MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
-MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
-
-#Hardcoded Mirror price
-MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650})
+def loadMarketPrices():
+    MARKET_PRICES[ITEM_TYPES.Card].update(getNinjaPrices(CARD_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Prophecy].update(getNinjaPrices(PROPHECY_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_FLASK_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_WEAPON_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ARMOUR_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650}) #Hardcoded Mirror price
 
 '''
 for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
@@ -516,26 +527,22 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Unique].items():
     print(str(k) + ': ' + str(v))
 '''
 
+loadMarketPrices()
 splashScreen()
 
-'''
-# LOCAL
-pagefile = 'lastresponse.txt'
-print('Loading page from file ' + pagefile)
-data = loadApiPageFromFile(pagefile)
-stashes = data['stashes']
-findDeals(stashes)
-print("Done!")
-'''
-
-#ONLINE
-next_change_id = getNinjaNextPageId()
-while(True):
-    print('Fetching page #{}...'.format(next_change_id))
-    data = getApiPage(next_change_id)
+if LOAD_FROM_LOCAL_DUMP_FILE:
+    pagefile = 'lastresponse.txt'
+    print('Loading page from file ' + pagefile)
+    data = loadApiPageFromFile(pagefile)
     stashes = data['stashes']
     findDeals(stashes)
-    next_change_id = data['next_change_id']
-    time.sleep(1)
-
-
+    print("Done!")
+else:
+    next_change_id = getNinjaNextPageId()
+    while(True):
+        print('Fetching page #{}...'.format(next_change_id))
+        data = getApiPage(next_change_id)
+        stashes = data['stashes']
+        findDeals(stashes)
+        next_change_id = data['next_change_id']
+        time.sleep(1)
