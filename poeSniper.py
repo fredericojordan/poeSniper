@@ -6,7 +6,7 @@ import winsound
 import base64
 
 # Config
-LOAD_FROM_LOCAL_DUMP_FILE = False
+LOAD_FROM_LOCAL_DUMP_FILE = True
 PLAY_SOUNDS = True
 
 # Deal Finder Configs
@@ -51,12 +51,12 @@ STR_INT_BODY_ARMOUR_LIST = ['Chainmail Vest','Chainmail Tunic','Ringmail Coat','
 DEX_INT_BODY_ARMOUR_LIST = ['Padded Vest','Oiled Vest','Padded Jacket','Oiled Coat','Scarlet Raiment','Waxed Garb','Bone Armour','Quilted Jacket','Sleek Coat','Crimson Raiment','Lacquered Garb','Crypt Armour','Sentinel Jacket','Varnished Coat','Blood Raiment','Sadist Garb','Carnal Armour']
 
 # Gloves
-STR_GLOVES_LIST = []
-DEX_GLOVES_LIST = []
-INT_GLOVES_LIST = []
-STR_DEX_GLOVES_LIST = []
-STR_INT_GLOVES_LIST = []
-DEX_INT_GLOVES_LIST = []
+STR_GLOVES_LIST = ['Iron Gauntlets','Plated Gauntlets','Bronze Gauntlets','Steel Gauntlets','Antique Gauntlets','Ancient Gauntlets','Goliath Gauntlets','Vaal Gauntlets','Titan Gauntlets','Spiked Gauntlets']
+DEX_GLOVES_LIST = ['Rawhide Gloves','Goathide Gloves','Deerskin Gloves','Nubuck Gloves','Eelskin Gloves','Sharkskin Gloves','Shagreen Gloves','Stealth Gloves','Slink Gloves','Gripped Gloves']
+INT_GLOVES_LIST = ['Wool Gloves','Velvet Gloves','Silk Gloves','Embroidered Gloves','Satin Gloves','Samite Gloves','Conjurer Gloves','Arcanist Gloves','Sorcerer Gloves','Fingerless Silk Gloves']
+STR_DEX_GLOVES_LIST = ['Fishscale Gauntlets','Ironscale Gauntlets','Bronzescale Gauntlets','Steelscale Gauntlets','Serpentscale Gauntlets','Wyrmscale Gauntlets','Hydrascale Gauntlets','Dragonscale Gauntlets']
+STR_INT_GLOVES_LIST = ['Chain Gloves','Ringmail Gloves','Mesh Gloves','Riveted Gloves','Zealot Gloves','Soldier Gloves','Legion Gloves','Crusader Gloves']
+DEX_INT_GLOVES_LIST = ['Wrapped Mitts','Strapped Mitts','Clasped Mitts','Trapper Mitts','Ambush Mitts','Carnal Mitts','Assassin\'s Mitts','Murder Mitts']
 
 # Helmet
 STR_HELMET_LIST = []
