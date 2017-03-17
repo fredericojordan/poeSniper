@@ -64,7 +64,7 @@ DEX_HELMET_LIST = ['Leather Cap','Tricorne','Leather Hood','Wolf Pelt','Hunter H
 INT_HELMET_LIST = ['Vine Circlet','Iron Circlet','Torture Cage','Tribal Circlet','Bone Circlet','Lunaris Circlet','Steel Circlet','Necromancer Circlet','Solaris Circlet','Mind Cage','Hubris Circlet']
 STR_DEX_HELMET_LIST = ['Battered Helm','Sallet','Visored Sallet','Gilded Sallet','Secutor Helm','Fencer Helm','Lacquered Helmet','Fluted Bascinet','Pig-Faced Bascinet','Nightmare Bascinet']
 STR_INT_HELMET_LIST = ['Rusted Coif','Soldier Helmet','Great Helmet','Crusader Helmet','Aventail Helmet','Zealot Helmet','Great Crown','Magistrate Crown','Prophet Crown','Praetor Crown','Bone Helmet']
-DEX_INT_HELMET_LIST = ['Scare Mask','Plage Mask','Iron Mask','Festival Mask','Golden Mask','Raven Mask','Callous Mask','Regicide Mask','Harlequin Mask','Vaal Mask','Deicide Mask']
+DEX_INT_HELMET_LIST = ['Scare Mask','Plague Mask','Iron Mask','Festival Mask','Golden Mask','Raven Mask','Callous Mask','Regicide Mask','Harlequin Mask','Vaal Mask','Deicide Mask']
 
 # Boots
 STR_BOOTS_LIST = []
