@@ -6,7 +6,7 @@ import winsound
 import base64
 
 # Config
-LOAD_FROM_LOCAL_DUMP_FILE = True
+LOAD_FROM_LOCAL_DUMP_FILE = False
 PLAY_SOUNDS = True
 
 # Deal Finder Configs
@@ -408,15 +408,18 @@ def isItemOfInterest(item):
            (isUnique(item) and isFlask(item)) or \
            (isUnique(item) and isWeapon(item)) or \
            (isUnique(item) and isArmour(item))
+           
+def decodeUserString(string):
+    return str(string.encode("utf-8"))[2:-1]
 
 def getStashName(stash):
-    return stash["stash"]
+    return decodeUserString(stash["stash"])
 
 def getCharacterName(stash):
-    return stash["lastCharacterName"]
+    return decodeUserString(stash["lastCharacterName"])
 
 def getAccountName(stash):
-    return stash["accountName"]
+    return decodeUserString(stash["accountName"])
 
 def isEmpty(stash):
     return stash["items"] == []
