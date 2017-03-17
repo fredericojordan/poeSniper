@@ -92,6 +92,9 @@ RING_LIST = ['Breach Ring','Coral Ring','Iron Ring','Paua Ring','Unset Ring','Sa
 # Belt
 BELT_LIST = ['Chain Belt','Rustic Sash','Heavy Belt','Leather Belt','Cloth Belt','Studded Belt','Vanguard Belt','Crystal Belt']
 
+# Quiver
+QUIVER_LIST = ['Two-Point Arrow Quiver','Serrated Arrow Quiver','Sharktooth Arrow Quiver','Blunt Arrow Quiver','Fire Arrow Quiver','Broadhead Arrow Quiver','Penetrating Arrow Quiver','Spike-Point Arrow Quiver']
+
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
 
@@ -205,6 +208,25 @@ def isCorrupted(item):
 
 def isFlask(item):
     return 'Flask' in getItemCompleteName(item)
+
+def isAcessory(item):
+    c = isAmulet(item) or \
+        isRing(item) or \
+        isBelt(item) or \
+        isQuiver(item)
+    return c
+
+def isAmulet(item):
+    return getItemTypeLine(item) in AMULET_LIST
+
+def isRing(item):
+    return getItemTypeLine(item) in RING_LIST
+
+def isBelt(item):
+    return getItemTypeLine(item) in BELT_LIST
+
+def isQuiver(item):
+    return getItemTypeLine(item) in QUIVER_LIST
 
 def isArmour(item):
     c = isGloves(item) or \
