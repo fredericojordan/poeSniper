@@ -149,8 +149,8 @@ def isOfferValid(item):
         getOfferQuantity(offer) > 0.0
 
 def getItemSellingOffer(item):
-    o = re.split(r'(\~*\s*)(\d+(?:\.\d+)?(?:\/\d+)?)(\W*)', item['note'])
-    return [o[0], o[2], o[4]]
+    offer = re.split(r'([-+]?\d?(?:\.)?(?:\/)?\d+(?:\.)?(?:\/)?\d?)', item['note'])
+    return [i.strip() for i in offer]
 
 def offer2chaos(offer):
     quantity = getOfferQuantity(offer)
