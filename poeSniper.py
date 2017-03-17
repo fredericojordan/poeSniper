@@ -67,20 +67,30 @@ STR_INT_HELMET_LIST = ['Rusted Coif','Soldier Helmet','Great Helmet','Crusader H
 DEX_INT_HELMET_LIST = ['Scare Mask','Plague Mask','Iron Mask','Festival Mask','Golden Mask','Raven Mask','Callous Mask','Regicide Mask','Harlequin Mask','Vaal Mask','Deicide Mask']
 
 # Boots
-STR_BOOTS_LIST = []
-DEX_BOOTS_LIST = []
-INT_BOOTS_LIST = []
-STR_DEX_BOOTS_LIST = []
-STR_INT_BOOTS_LIST = []
-DEX_INT_BOOTS_LIST = []
+STR_BOOTS_LIST = ['Iron Greaves','Steel Greaves','Plated Greaves','Reinforced Greaves','Antique Greaves','Ancient Greaves','Goliath Greaves','Vaal Greaves','Titan Greaves']
+DEX_BOOTS_LIST = ['Rawhide Boots','Goathide Boots','Deerskin Boots','Nubuck Boots','Eelskin Boots','Sharkskin Boots','Shagreen Boots','Stealth Boots','Slink Boots']
+INT_BOOTS_LIST = ['Wool Shoes','Velvet Slippers','Silk Slippers','Scholar Boots','Satin Slippers','Samite Slippers','Conjurer Boots','Arcanist Slippers','Sorcerer Boots']
+STR_DEX_BOOTS_LIST = ['Leatherscale Boots','Ironscale Boots','Bronzescale Boots','Steelscale Boots','Serpentscale Boots','Wyrmscale Boots','Hydrascale Boots','Dragonscale Boots','Two-Toned Boots']
+STR_INT_BOOTS_LIST = ['Chain Boots','Ringmail Boots','Mesh Boots','Riveted Boots','Zealot Boots','Soldier Boots','Legion Boots','Crusader Boots','Two-Toned Boots']
+DEX_INT_BOOTS_LIST = ['Wrapped Boots','Strapped Boots','Clasped Boots','Shackled Boots','Trapper Boots','Ambush Boots','Carnal Boots','Assassin\'s Boots','Murder Boots','Two-Toned Boots']
 
 # Shield
-STR_SHIELD_LIST = []
-DEX_SHIELD_LIST = []
-INT_SHIELD_LIST = []
-STR_DEX_SHIELD_LIST = []
-STR_INT_SHIELD_LIST = []
-DEX_INT_SHIELD_LIST = []
+STR_SHIELD_LIST = ['Splintered Tower Shield','Corroded Tower Shield','Rawhide Tower Shield','Cedar Tower Shield','Copper Tower Shield','Reinforced Tower Shield','Painted Tower Shield','Buckskin Tower Shield','Mahogany Tower Shield','Bronze Tower Shield','Girded Tower Shield','Crested Tower Shield','Shagreen Tower Shield','Ebony Tower Shield','Ezomyte Tower Shield','Colossal Tower Shield','Pinnacle Tower Shield']
+DEX_SHIELD_LIST = ['Goathide Buckler','Pine Buckler','Painted Buckler','Hammered Buckler','War Buckler','Gilded Buckler','Oak Buckler','Enameled Buckler','Corrugated Buckler','Battle Buckler','Golden Buckler','Ironwood Buckler','Lacquered Buckler','Vaal Buckler','Crusader Buckler','Imperial Buckler']
+INT_SHIELD_LIST = ['Twig Spirit Shield','Yew Spirit Shield','Bone Spirit Shield','Tarnished Spirit Shield','Jingling Spirit Shield','Brass Spirit Shield','Walnut Spirit Shield','Ivory Spirit Shield','Ancient Spirit Shield','Chiming Spirit Shield','Thorium Spirit Shield','Lacewood Spirit Shield','Fossilised Spirit Shield','Vaal Spirit Shield','Harmonic Spirit Shield','Titanium Spirit Shield']
+STR_DEX_SHIELD_LIST = ['Rotted Round Shield','Fir Round Shield','Studded Round Shield','Scarlet Round Shield','Splendid Round Shield','Maple Round Shield','Spiked Round Shield','Crimson Round Shield','Baroque Round Shield','Teak Round Shield','Spiny Round Shield','Cardial Round Shield','Elegant Round Shield']
+STR_INT_SHIELD_LIST = ['Plank Kite Shield','Linden Kite Shield','Reinforced Kite Shield','Layered Kite Shield','Ceremonial Kite Shield','Etched Kite Shield','Steel Kite Shield','Laminated Kite Shield','Angelic Kite Shield','Branded Kite Shield','Champion Kite Shield','Mosaic Kite Shield','Archon Kite Shield']
+DEX_INT_SHIELD_LIST = ['Spiked Bundle','Driftwood Spiked Shield','Alloyed Spiked Shield','Burnished Spiked Shield','Ornate Spiked Shield','Redwood Spiked Shield','Compound Spiked Shield','Polished Spiked Shield','Sovereign Spiked Shield','Alder Spiked Shield','Ezomyte Spiked Shield','Mirrored Spiked Shield','Supreme Spiked Shield']
+
+# Acessories
+# Amulet
+AMULET_LIST = ['Coral Amulet','Paua Amulet','Amber Amulet','Jade Amulet','Lapis Amulet','Gold Amulet','Agate Amulet','Citrine Amulet','Turquoise Amulet','Onyx Amulet','Marble Amulet','Blue Pearl Amulet']
+
+# Rings
+RING_LIST = ['Breach Ring','Coral Ring','Iron Ring','Paua Ring','Unset Ring','Sapphire Ring','Topaz Ring','Ruby Ring','Diamond Ring','Gold Ring','Moonstone Ring','Two-Stone Ring','Amethyst Ring','Prismatic Ring','Opal Ring','Steel Ring']
+
+# Belt
+BELT_LIST = ['Chain Belt','Rustic Sash','Heavy Belt','Leather Belt','Cloth Belt','Studded Belt','Vanguard Belt','Crystal Belt']
 
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
