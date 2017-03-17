@@ -166,7 +166,12 @@ def isOfferValid(item):
 
 def getItemSellingOffer(item):
     offer = re.split(r'([-+]?\d?(?:\.)?(?:\/)?\d+(?:\.)?(?:\/)?\d?)', item['note'])
-    return [i.strip() for i in offer]
+    offer = [i.strip() for i in offer]
+    if offer[1].startswith('/'):
+        offer[1] = '1' + str(offer[1])
+    if offer[1].endswith('/'):
+        offer[1] = str(offer[1]) + '1'
+    return offer
 
 def offer2chaos(offer):
     quantity = getOfferQuantity(offer)
@@ -571,7 +576,7 @@ loadMarketPrices()
 splashScreen()
 
 if LOAD_FROM_LOCAL_DUMP_FILE:
-    pagefile = 'response.txt'
+    pagefile = 'lastresponse.txt'
     print('Loading page from file ' + pagefile)
     data = loadApiPageFromFile(pagefile)
     stashes = data['stashes']
