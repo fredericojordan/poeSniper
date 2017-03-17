@@ -186,7 +186,7 @@ def offer2chaos(offer):
         return  quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
     
     for currency,value in MARKET_PRICES[ITEM_TYPES.Currency].items():
-        if offer[2].lower() in currency.lower():
+        if any(s in currency.lower() for s in offer[2].lower()):
             return quantity*value
 
 def getItemSellingPrice(item):
@@ -512,6 +512,7 @@ def findDeals(stashes):
         items = s['items']
         for i in items:
             if isGoodDeal(i):
+                soundAlert()
                 print("{} {}".format(getTradeInfoMessage(i), getTradeInGameMessage(s, i)))
                     
 def createStashDumpFile(npages, starting_page=""):
