@@ -145,7 +145,6 @@ def isOfferValid(item):
     offer = getItemSellingOffer(item)
     return (offer[0].startswith("~b/o") or offer[0].startswith("~price")) and \
         '/0' not in offer[1] and \
-        '.0' not in offer[1] and \
         getOfferQuantity(offer) > 0.0
 
 def getItemSellingOffer(item):
