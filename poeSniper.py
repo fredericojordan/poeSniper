@@ -75,12 +75,12 @@ STR_INT_BOOTS_LIST = ['Chain Boots','Ringmail Boots','Mesh Boots','Riveted Boots
 DEX_INT_BOOTS_LIST = ['Wrapped Boots','Strapped Boots','Clasped Boots','Shackled Boots','Trapper Boots','Ambush Boots','Carnal Boots','Assassin\'s Boots','Murder Boots','Two-Toned Boots']
 
 # Shield
-STR_SHIELD_LIST = []
-DEX_SHIELD_LIST = []
-INT_SHIELD_LIST = []
-STR_DEX_SHIELD_LIST = []
-STR_INT_SHIELD_LIST = []
-DEX_INT_SHIELD_LIST = []
+STR_SHIELD_LIST = ['Splintered Tower Shield','Corroded Tower Shield','Rawhide Tower Shield','Cedar Tower Shield','Copper Tower Shield','Reinforced Tower Shield','Painted Tower Shield','Buckskin Tower Shield','Mahogany Tower Shield','Bronze Tower Shield','Girded Tower Shield','Crested Tower Shield','Shagreen Tower Shield','Ebony Tower Shield','Ezomyte Tower Shield','Colossal Tower Shield','Pinnacle Tower Shield']
+DEX_SHIELD_LIST = ['Goathide Buckler','Pine Buckler','Painted Buckler','Hammered Buckler','War Buckler','Gilded Buckler','Oak Buckler','Enameled Buckler','Corrugated Buckler','Battle Buckler','Golden Buckler','Ironwood Buckler','Lacquered Buckler','Vaal Buckler','Crusader Buckler','Imperial Buckler']
+INT_SHIELD_LIST = ['Twig Spirit Shield','Yew Spirit Shield','Bone Spirit Shield','Tarnished Spirit Shield','Jingling Spirit Shield','Brass Spirit Shield','Walnut Spirit Shield','Ivory Spirit Shield','Ancient Spirit Shield','Chiming Spirit Shield','Thorium Spirit Shield','Lacewood Spirit Shield','Fossilised Spirit Shield','Vaal Spirit Shield','Harmonic Spirit Shield','Titanium Spirit Shield']
+STR_DEX_SHIELD_LIST = ['Rotted Round Shield','Fir Round Shield','Studded Round Shield','Scarlet Round Shield','Splendid Round Shield','Maple Round Shield','Spiked Round Shield','Crimson Round Shield','Baroque Round Shield','Teak Round Shield','Spiny Round Shield','Cardial Round Shield','Elegant Round Shield']
+STR_INT_SHIELD_LIST = ['Plank Kite Shield','Linden Kite Shield','Reinforced Kite Shield','Layered Kite Shield','Ceremonial Kite Shield','Etched Kite Shield','Steel Kite Shield','Laminated Kite Shield','Angelic Kite Shield','Branded Kite Shield','Champion Kite Shield','Mosaic Kite Shield','Archon Kite Shield']
+DEX_INT_SHIELD_LIST = ['Spiked Bundle','Driftwood Spiked Shield','Alloyed Spiked Shield','Burnished Spiked Shield','Ornate Spiked Shield','Redwood Spiked Shield','Compound Spiked Shield','Polished Spiked Shield','Sovereign Spiked Shield','Alder Spiked Shield','Ezomyte Spiked Shield','Mirrored Spiked Shield','Supreme Spiked Shield']
 
 class ITEM_TYPES:
     Normal, Magic, Rare, Unique, Gem, Currency, Card, Quest, Prophecy, Relic = range(10)
