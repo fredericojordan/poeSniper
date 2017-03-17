@@ -22,7 +22,9 @@ PROPHECY_PRICES_URL = "http://api.poe.ninja/api/Data/GetProphecyOverview"
 UNIQUE_ARMOUR_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueArmourOverview"
 UNIQUE_WEAPON_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueWeaponOverview"
 UNIQUE_MAP_PRICES_URL = "http://api.poe.ninja/api/Data/GetUniqueMapOverview"
-UNIQUE_ACESSORY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetAcessoriesOverview"
+UNIQUE_ACESSORY_PRICES_URL = "http://poeninja.azureedge.net/api/Data/GetUniqueAccessoryOverview"
+UNIQUE_JEWEL_PRICES_URL = "http://poeninja.azureedge.net/api/Data/GetUniqueJewelOverview"
+ESSENCE_OVERVIEW_URL = "http://poeninja.azureedge.net/api/Data/GetEssenceOverview"
 CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
 
 
@@ -553,7 +555,7 @@ def loadMarketPrices():
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_WEAPON_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ARMOUR_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
-    #MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ACESSORY_PRICES_URL))
+    MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ACESSORY_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650}) #Hardcoded Mirror price
 
