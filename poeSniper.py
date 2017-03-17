@@ -6,7 +6,7 @@ import winsound
 import base64
 
 # Config
-LOAD_FROM_LOCAL_DUMP_FILE = False
+LOAD_FROM_LOCAL_DUMP_FILE = True
 PLAY_SOUNDS = True
 
 # Deal Finder Configs
@@ -22,7 +22,9 @@ PROPHECY_PRICES_URL = "http://api.poe.ninja/api/Data/GetProphecyOverview"
 UNIQUE_ARMOUR_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueArmourOverview"
 UNIQUE_WEAPON_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueWeaponOverview"
 UNIQUE_MAP_PRICES_URL = "http://api.poe.ninja/api/Data/GetUniqueMapOverview"
+UNIQUE_ACESSORY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetAcessoriesOverview"
 CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
+
 
 MARKET_PRICES = [{} for _ in range(10)]
 
@@ -439,7 +441,8 @@ def isItemOfInterest(item):
     return isDivinationCard(item) or \
            (isUnique(item) and isFlask(item)) or \
            (isUnique(item) and isWeapon(item)) or \
-           (isUnique(item) and isArmour(item))
+           (isUnique(item) and isArmour(item)) or \
+           (isUnique(item) and isAcessory(item))
            
 def decodeUserString(string):
     return str(string.encode("utf-8"))[2:-1]
@@ -550,6 +553,7 @@ def loadMarketPrices():
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_WEAPON_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ARMOUR_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
+    #MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ACESSORY_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650}) #Hardcoded Mirror price
 
@@ -565,7 +569,7 @@ loadMarketPrices()
 splashScreen()
 
 if LOAD_FROM_LOCAL_DUMP_FILE:
-    pagefile = 'lastresponse.txt'
+    pagefile = 'response.txt'
     print('Loading page from file ' + pagefile)
     data = loadApiPageFromFile(pagefile)
     stashes = data['stashes']
