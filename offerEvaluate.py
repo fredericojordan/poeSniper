@@ -67,6 +67,16 @@ def isOfferValid(item):
     return conditions
 
 
+# TEST
+notes = ['~','~b/o 2 chaos','~price 1mirr','~b/o 25.3 alt','~b/o 3/5 chaos','~price 5/0 chaos','~price .13 chrom','~b/o .015 chaos']
+for s in notes:
+	print(s)
+	hasNote = True
+	if hasNote:
+		offer = re.split(r'(\~*\s*)(\d+(?:\.\d+)?(?:\/\d+)?)(\W*)', s)
+	print(offer)
+
+'''
 # LOCAL
 pagefile = 'lastOffers.txt'
 print('Loading page from file ' + pagefile)
@@ -75,7 +85,7 @@ stashes = data['stashes']
 evaluateOffers(stashes)
 print('Done!')
 
-'''
+
 
 # ONLINE
 next_change_id = getNinjaNextPageId()
