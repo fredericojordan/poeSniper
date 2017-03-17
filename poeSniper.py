@@ -20,7 +20,7 @@ CARD_PRICES_URL = "http://api.poe.ninja/api/Data/GetDivinationCardsOverview"
 PROPHECY_PRICES_URL = "http://api.poe.ninja/api/Data/GetProphecyOverview"
 UNIQUE_ARMOUR_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueArmourOverview"
 UNIQUE_WEAPON_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetUniqueWeaponOverview"
-UNIQUE_MAP_PRICES_URL = "http://api.poe.ninja/api/Data/GetMapOverview"
+UNIQUE_MAP_PRICES_URL = "http://api.poe.ninja/api/Data/GetUniqueMapOverview"
 CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
 
 MARKET_PRICES = [{} for _ in range(10)]
@@ -135,7 +135,10 @@ def isOfferValid(item):
     if hasNote:
         offer = getItemSellingOffer(item)
         hasPrice = offer[0].startswith("~b/o") or offer[0].startswith("~price")
-        priceIsNotNull = eval(offer[1]) > 0.0
+        if '/0' not in offer[1]:
+            priceIsNotNull = eval(offer[1]) > 0.0
+        else:
+            priceIsNotNull = False
     
     conditions = hasNote and hasPrice and priceIsNotNull
     return conditions
@@ -145,7 +148,10 @@ def getItemSellingOffer(item):
     return [o[0], o[2], o[4]]
 
 def offer2chaos(offer):
-    quantity = float(eval(offer[1]))
+    if '/0' not in offer[1] and '.0' not in offer[1]:
+        quantity = float(eval(offer[1]))
+    else:
+        quantity = 9999.0
     
     if "chaos" in offer[2]:
         return quantity
@@ -182,7 +188,7 @@ def isFlask(item):
 def isArmour(item):
     c = isGloves(item) or \
         isBoots(item) or \
-        isHelemt(item) or \
+        isHelmet(item) or \
         isShield(item) or \
         isBodyArmour(item)
     return c
@@ -277,7 +283,7 @@ def isHelmet(item):
         isDexIntHelmet(item)
     return c
 
-def isStrHelemt(item):
+def isStrHelmet(item):
     return getItemTypeLine(item) in STR_HELMET_LIST
 
 def isDexHelmet(item):
@@ -398,8 +404,8 @@ def getItemMarketPrice(item):
         if getItemName(item) in MARKET_PRICES[ITEM_TYPES.Unique]:
             return MARKET_PRICES[ITEM_TYPES.Unique][getItemName(item)]
         else:
-            print('Item not in price list! ' + getItemName(item))
-            return 9999.0
+            print('Item not in price list! ' + getItemName(item) + ' ' + getItemTypeLine(item))
+            return 0.0
                 
 def getTradeInGameMessage(stash, item):
     characterName = getCharacterName(stash)
@@ -425,7 +431,7 @@ def findDeals(stashes):
     for s in stashes:
         items = s['items']
         for i in items:
-            if getItemLeague(i) == CURRENT_LEAGUE and isOfferValid(i):
+            if getItemLeague(i) == CURRENT_LEAGUE and not(getItemFrameType(i) == ITEM_TYPES.Currency) and isOfferValid(i):
                 # Divination Cards
                 if getItemFrameType(i) == ITEM_TYPES.Card:
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
@@ -435,19 +441,19 @@ def findDeals(stashes):
                 # UniqueFlasks
                 if getItemFrameType(i) == ITEM_TYPES.Unique and isFlask(i):
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
+                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
                         print(outputText)
                         
                 # Unique Weapons
                 if getItemFrameType(i) == ITEM_TYPES.Unique and isWeapon(i):
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
+                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
                         print(outputText)
                 
                 # Unique Armour Pieces
                 if getItemFrameType(i) == ITEM_TYPES.Unique and isArmour(i):
                     if getProfitMargin(i) >= MIN_PROFIT and getROI(i) >= MIN_ROI:
-                        outputText = getTradeInfoMessage(i) + getTradeInGameMessage(s, i)
+                        outputText = getTradeInfoMessage(i) + ' ' + getTradeInGameMessage(s, i)
                         print(outputText)
                 
                     
@@ -499,6 +505,9 @@ MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ARMOUR_PRICES_URL)
 MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
 MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
 
+#Hardcoded Mirror price
+MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650})
+
 '''
 for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
     print(str(k) + ': ' + str(v))
@@ -509,6 +518,7 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Unique].items():
 
 splashScreen()
 
+'''
 # LOCAL
 pagefile = 'lastresponse.txt'
 print('Loading page from file ' + pagefile)
@@ -516,16 +526,16 @@ data = loadApiPageFromFile(pagefile)
 stashes = data['stashes']
 findDeals(stashes)
 print("Done!")
-
 '''
+
 #ONLINE
 next_change_id = getNinjaNextPageId()
 while(True):
     print('Fetching page #{}...'.format(next_change_id))
     data = getApiPage(next_change_id)
     stashes = data['stashes']
-    findDivDeals(stashes)
-    findUniqueFlaskDeals(stashes)
+    findDeals(stashes)
     next_change_id = data['next_change_id']
     time.sleep(1)
-'''
+
+
