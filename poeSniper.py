@@ -9,8 +9,13 @@ from termcolor import cprint
 
 # Config
 LOAD_FROM_LOCAL_DUMP_FILE = False
+START_FROM_FIXED_PAGE_ID = False
+CREATE_DUMP_FILE = False
 PLAY_SOUNDS = True
 COLORED = True
+
+
+FIXED_NEXT_PAGE_ID = '52071166-55208879-51623306-60065273-55838985'
 
 # Deal Finder Configs
 MIN_PROFIT = 3.0
@@ -130,7 +135,8 @@ def getApiPage(page_id=""):
     
     if response.status_code == 200:
         data = response.json()
-        dumpToFile(data, 'lastresponse.txt')
+        if CREATE_DUMP_FILE:
+            dumpToFile(data, 'lastresponse.txt')
         return data
     else:
         raise ConnectionError('API request returned status code {}: {}!'.format(response.status_code, response.reason))
@@ -621,7 +627,10 @@ if LOAD_FROM_LOCAL_DUMP_FILE:
     findDeals(stashes)
     print("Done!")
 else:
-    next_change_id = getNinjaNextPageId()
+    if START_FROM_FIXED_PAGE_ID:
+        next_change_id = FIXED_NEXT_PAGE_ID
+    else:
+        next_change_id = getNinjaNextPageId()
     while(True):
         print('Fetching page #{}...'.format(next_change_id))
         data = getApiPage(next_change_id)
