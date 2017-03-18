@@ -186,11 +186,13 @@ def offer2chaos(offer):
         return quantity
     
     if "fus" in offer[2]:
-        return  quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
+        return quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Orb of Fusing"]
     
     if "gcp" in offer[2]:
-        return  quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
+        return quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
         
+    if "exalts" in offer[2]:
+        return quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Exalted Orb"]
     for currency,value in MARKET_PRICES[ITEM_TYPES.Currency].items():
         if any(s in currency.lower() for s in offer[2].lower().split()):
             return quantity*value
