@@ -4,10 +4,13 @@ import time
 import re
 import winsound
 import base64
+import termcolor
+from termcolor import cprint
 
 # Config
 LOAD_FROM_LOCAL_DUMP_FILE = False
 PLAY_SOUNDS = True
+COLORED = True
 
 # Deal Finder Configs
 MIN_PROFIT = 3.0
@@ -512,13 +515,33 @@ def isGoodDeal(item):
         isLucrative(item) and \
         isWithinPriceRange(item)
 
+def printDeal(stash,item):
+    msg = ("{} {}".format(getTradeInfoMessage(item), getTradeInGameMessage(stash, item)))
+    ROI = getROI(item)
+    
+    if (COLORED):
+        if ROI > 1:
+            cprint(msg,'red')
+            soundAlert()
+        elif ROI > 0.8:
+            cprint(msg,'orange')
+        elif ROI > 0.5:
+            cprint(msg,'yellow')
+        else:
+            print(msg)
+    else:
+        print(msg)
+
+
 def findDeals(stashes):
     for s in stashes:
         items = s['items']
         for i in items:
             if isGoodDeal(i):
-                soundAlert()
-                print("{} {}".format(getTradeInfoMessage(i), getTradeInGameMessage(s, i)))
+                print(getROI(i))
+                printDeal(s,i)
+                
+                
                     
 def createStashDumpFile(npages, starting_page=""):
     nextPageID = starting_page
