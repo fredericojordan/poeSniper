@@ -34,6 +34,9 @@ CURRENCY_PRICES_URL = "http://cdn.poe.ninja/api/Data/GetCurrencyOverview"
 
 MARKET_PRICES = [{} for _ in range(10)]
 
+# Item Ignore List
+IGNORE_LIST = ['Drillneck', 'Ventor\'s Gamble']
+
 # Weapon Lists
 AXE1H_LIST = ['Rusted Hatchet','Jade Hatchet','Boarding Axe','Cleaver','Broad Axe','Arming Axe','Decorative Axe','Spectral Axe','Etched Hatchet','Jasper Axe','Tomahawk','Wrist Chopper','War Axe','Chest Splitter','Ceremonial Axe','Wraith Axe','Engraved Hatchet','Karui Axe','Siege Axe','Reaver Axe','Butcher Axe','Vaal Hatchet','Royal Axe','Infernal Axe','Runic Hatchet']
 AXE2H_LIST = ['Stone Axe','Jade Chopper','Woodsplitter','Poleaxe','Double Axe','Gilded Axe','Shadow Axe','Dagger Axe','Jasper Chopper','Timber Axe','Headsman Axe','Labrys','Noble Axe','Abyssal Axe','Karui Chopper','Talon Axe','Sundering Axe','Ezomyte Axe','Vaal Axe','Despot Axe','Void Axe','Fleshripper']
@@ -538,7 +541,6 @@ def findDeals(stashes):
         items = s['items']
         for i in items:
             if isGoodDeal(i):
-                print(getROI(i))
                 printDeal(s,i)
                 
                 
@@ -574,12 +576,12 @@ def dumpToFile(data, filename):
         outfile.close()
         
 def splashScreen():
-    print(base64.b64decode('X19fX19fX19fXyAgICAgX19fX19fX19fX18gICBfX19fX19fX18gICAgICAuX18=').decode("utf-8"))
-    print(base64.b64decode('XF9fX19fXyAgIFxfX19fXF8gICBfX19fXy8gIC8gICBfX19fXy8gX19fXyB8X198X19fX18gICBfX19fX19fX19fXw==').decode("utf-8") )
-    print(base64.b64decode('IHwgICAgIF9fXy8gIF8gXHwgICAgX18pXyAgIFxfX19fXyAgXCAvICAgIFx8ICBcX19fXyBcXy8gX18gXF8gIF9fIFw=').decode("utf-8") )
-    print(base64.b64decode('IHwgICAgfCAgKCAgPF8+ICkgICAgICAgIFwgIC8gICAgICAgIFwgICB8ICBcICB8ICB8Xz4gPiAgX19fL3wgIHwgXC8=').decode("utf-8") )
-    print(base64.b64decode('IHxfX19ffCAgIFxfX19fL19fX19fX18gIC8gL19fX19fX18gIC9fX198ICAvX198ICAgX18vIFxfX18gID5fX3w=').decode("utf-8") )
-    print(base64.b64decode('ICAgICAgICAgICAgICAgICAgICAgICBcLyAgICAgICAgICBcLyAgICAgXC8gICB8X198ICAgICAgICBcLw==').decode("utf-8") )
+    cprint(base64.b64decode('X19fX19fX19fXyAgICAgX19fX19fX19fX18gICBfX19fX19fX18gICAgICAuX18=').decode("utf-8"),'red')
+    cprint(base64.b64decode('XF9fX19fXyAgIFxfX19fXF8gICBfX19fXy8gIC8gICBfX19fXy8gX19fXyB8X198X19fX18gICBfX19fX19fX19fXw==').decode("utf-8"),'yellow' )
+    cprint(base64.b64decode('IHwgICAgIF9fXy8gIF8gXHwgICAgX18pXyAgIFxfX19fXyAgXCAvICAgIFx8ICBcX19fXyBcXy8gX18gXF8gIF9fIFw=').decode("utf-8"),'green' )
+    cprint(base64.b64decode('IHwgICAgfCAgKCAgPF8+ICkgICAgICAgIFwgIC8gICAgICAgIFwgICB8ICBcICB8ICB8Xz4gPiAgX19fL3wgIHwgXC8=').decode("utf-8"),'cyan' )
+    cprint(base64.b64decode('IHxfX19ffCAgIFxfX19fL19fX19fX18gIC8gL19fX19fX18gIC9fX198ICAvX198ICAgX18vIFxfX18gID5fX3w=').decode("utf-8"),'blue' )
+    cprint(base64.b64decode('ICAgICAgICAgICAgICAgICAgICAgICBcLyAgICAgICAgICBcLyAgICAgXC8gICB8X198ICAgICAgICBcLw==').decode("utf-8"),'magenta' )
     print()
 
 def loadMarketPrices():
