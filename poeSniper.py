@@ -13,6 +13,7 @@ PLAY_SOUNDS = True
 MIN_PROFIT = 3.0
 MIN_ROI = 0.05
 CURRENT_LEAGUE = "Legacy"
+MAX_PRICE = 15.0 #chaos
 
 # Prices URL
 API_BASE_URL = "http://api.pathofexile.com/public-stash-tabs"
@@ -498,13 +499,18 @@ def getTradeInfoMessage(item):
     roi = getROI(item)
     return '[ I:{:.1f}c / P:{:.1f}c / ROI:{:.2%} / {}{} ]'.format(investment, profit, roi, "CORRUPTED " if isCorrupted(item) else "", itemName)
 
+def isWithinPriceRange(item):
+    return getItemSellingPrice(item) <= MAX_PRICE
+    
+
 def isGoodDeal(item):
     return getItemLeague(item) == CURRENT_LEAGUE and \
         not(getItemFrameType(item) == ITEM_TYPES.Currency) and \
         isSelling(item) and \
         isOfferValid(item) and \
         isItemOfInterest(item) and \
-        isLucrative(item)
+        isLucrative(item) and \
+        isWithinPriceRange(item)
 
 def findDeals(stashes):
     for s in stashes:
