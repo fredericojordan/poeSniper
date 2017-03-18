@@ -6,7 +6,7 @@ import winsound
 import base64
 
 # Config
-LOAD_FROM_LOCAL_DUMP_FILE = True
+LOAD_FROM_LOCAL_DUMP_FILE = False
 PLAY_SOUNDS = True
 
 # Deal Finder Configs
@@ -171,7 +171,6 @@ def getItemSellingOffer(item):
         offer[1] = '1' + str(offer[1])
     if offer[1].endswith('/'):
         offer[1] = str(offer[1]) + '1'
-    print(offer)
     return offer
 
 def offer2chaos(offer):
