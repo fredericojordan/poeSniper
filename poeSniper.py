@@ -524,16 +524,16 @@ def isGoodDeal(item):
 
 def printDeal(stash,item):
     msg = ("{} {}".format(getTradeInfoMessage(item), getTradeInGameMessage(stash, item)))
-    ROI = getROI(item)
+    roi = getROI(item)
         
     if (COLORED):
-        if ROI > 1:
+        if roi > 1:
             cprint(msg,'red')
             soundAlert()
-        elif ROI > 0.8:
-            cprint(msg,'orange')
-        elif ROI > 0.5:
+        elif roi > 0.8:
             cprint(msg,'yellow')
+        elif roi > 0.5:
+            cprint(msg,'cyan')
         else:
             print(msg)
     else:
