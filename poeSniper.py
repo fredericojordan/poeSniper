@@ -175,7 +175,6 @@ def getItemSellingOffer(item):
 
 def offer2chaos(offer):
     quantity = getOfferQuantity(offer)
-    
     if "chaos" in offer[2]:
         return quantity
     
@@ -184,9 +183,9 @@ def offer2chaos(offer):
     
     if "gcp" in offer[2]:
         return  quantity*MARKET_PRICES[ITEM_TYPES.Currency]["Gemcutter's Prism"]
-    
+        
     for currency,value in MARKET_PRICES[ITEM_TYPES.Currency].items():
-        if any(s in currency.lower() for s in offer[2].lower()):
+        if any(s in currency.lower() for s in offer[2].lower().split()):
             return quantity*value
 
 def getItemSellingPrice(item):
@@ -563,7 +562,11 @@ def loadMarketPrices():
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_MAP_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Unique].update(getNinjaPrices(UNIQUE_ACESSORY_PRICES_URL))
     MARKET_PRICES[ITEM_TYPES.Currency].update(getNinjaCurrency(CURRENCY_PRICES_URL))
-    MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650}) #Hardcoded Mirror price
+    MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650.0}) #Hardcoded Mirror price
+
+
+loadMarketPrices()
+splashScreen()
 
 '''
 for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
@@ -572,9 +575,6 @@ for k,v in MARKET_PRICES[ITEM_TYPES.Currency].items():
 for k,v in MARKET_PRICES[ITEM_TYPES.Unique].items():
     print(str(k) + ': ' + str(v))
 '''
-
-loadMarketPrices()
-splashScreen()
 
 if LOAD_FROM_LOCAL_DUMP_FILE:
     pagefile = 'lastresponse.txt'
