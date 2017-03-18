@@ -507,21 +507,25 @@ def getTradeInfoMessage(item):
 
 def isWithinPriceRange(item):
     return getItemSellingPrice(item) <= MAX_PRICE
-    
 
+def isIgnored(item):
+    return any(s in getItemCompleteName(item) for s in IGNORE_LIST)
+    
 def isGoodDeal(item):
     return getItemLeague(item) == CURRENT_LEAGUE and \
         not(getItemFrameType(item) == ITEM_TYPES.Currency) and \
+        not isIgnored(item) and \
         isSelling(item) and \
         isOfferValid(item) and \
         isItemOfInterest(item) and \
         isLucrative(item) and \
         isWithinPriceRange(item)
+        
 
 def printDeal(stash,item):
     msg = ("{} {}".format(getTradeInfoMessage(item), getTradeInGameMessage(stash, item)))
     ROI = getROI(item)
-    
+        
     if (COLORED):
         if ROI > 1:
             cprint(msg,'red')
