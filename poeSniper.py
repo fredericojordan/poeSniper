@@ -15,7 +15,7 @@ PLAY_SOUNDS = True
 COLORED = True
 
 
-FIXED_NEXT_PAGE_ID = '52071166-55208879-51623306-60065273-55838985'
+FIXED_NEXT_PAGE_ID = '52175816-55316955-51724165-60182694-55945771'
 
 # Deal Finder Configs
 MIN_PROFIT = 3.0
@@ -178,8 +178,10 @@ def isOfferValid(item):
         getOfferQuantity(offer) > 0.0
 
 def getItemSellingOffer(item):
-    offer = re.split(r'([-+]?\d*(?:\.)?(?:\/)?\d+(?:\.)?(?:\/)?\d*)', item['note'])
+    offer = re.split(r'([-+]?\d*(?:\,)?(?:\.)?(?:\/)?\d+(?:\,)?(?:\.)?(?:\/)?\d*)', item['note'])
     offer = [i.strip() for i in offer]
+    if ',' in offer[1]:
+        offer[1] = re.sub(r',','.',offer[1])
     if offer[1].startswith('/'):
         offer[1] = '1' + str(offer[1])
     if offer[1].endswith('/'):
