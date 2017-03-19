@@ -632,7 +632,7 @@ else:
     else:
         next_change_id = getNinjaNextPageId()
     while(True):
-        print('Fetching page #{}...'.format(next_change_id))
+        print('[{}]Fetching page #{}...'.format(time.strftime('%H:%M:%S'), next_change_id))
         data = getApiPage(next_change_id)
         stashes = data['stashes']
         findDeals(stashes)
