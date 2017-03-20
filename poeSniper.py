@@ -4,7 +4,7 @@ import time
 import re
 import winsound
 import base64
-import termcolor
+import colorama
 from termcolor import cprint
 
 # Config
@@ -610,6 +610,7 @@ def loadMarketPrices():
     MARKET_PRICES[ITEM_TYPES.Currency].update({'Mirror of Kalandra': 650.0}) #Hardcoded Mirror price
 
 
+colorama.init()
 loadMarketPrices()
 splashScreen()
 
